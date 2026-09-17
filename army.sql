@@ -2325,6 +2325,51 @@ ALTER TABLE `user_linhtinh`
 ALTER TABLE `user_mission`
   ADD CONSTRAINT `user_mission_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_mission_ibfk_2` FOREIGN KEY (`mission_id`) REFERENCES `mission` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Web admin tables
+--
+
+CREATE TABLE `user_ban` (
+  `user_id` int(11) NOT NULL,
+  `reason` varchar(500) NOT NULL,
+  `banned_by` varchar(100) NOT NULL,
+  `banned_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `banned_until` timestamp NULL DEFAULT NULL,
+  `revoked_at` timestamp NULL DEFAULT NULL,
+  `revoked_by` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `user_ban_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `wallet_transaction` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `currency` varchar(16) NOT NULL,
+  `amount` bigint(20) NOT NULL,
+  `balance_before` bigint(20) NOT NULL,
+  `balance_after` bigint(20) NOT NULL,
+  `reason` varchar(500) NOT NULL,
+  `admin_username` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `wallet_user_created_idx` (`user_id`,`created_at`),
+  CONSTRAINT `wallet_transaction_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `admin_audit_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `admin_username` varchar(100) NOT NULL,
+  `action` varchar(64) NOT NULL,
+  `target_user_id` int(11) DEFAULT NULL,
+  `detail` varchar(1000) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `audit_created_idx` (`created_at`),
+  KEY `audit_target_idx` (`target_user_id`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

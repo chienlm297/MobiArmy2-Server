@@ -42,6 +42,24 @@ public class SessionManager {
         }
     }
 
+    public static ArrayList<Session> generateSessions() {
+        synchronized (lock) {
+            return new ArrayList<>(sessions);
+        }
+    }
+
+    public static int getOnlineUsersSize() {
+        synchronized (lock) {
+            int count = 0;
+            for (User user : users) {
+                if (user.session != null && user.session.connected) {
+                    count++;
+                }
+            }
+            return count;
+        }
+    }
+
 
     // Xóa session theo ID
     public static void removeSession(Session session) {
@@ -93,17 +111,23 @@ public class SessionManager {
     
     // Phương thức trả về kích thước của sessions
     public static int getSessionsSize() {
-        return sessions.size();
+        synchronized (lock) {
+            return sessions.size();
+        }
     }
 
     // Phương thức trả về kích thước của users_id
     public static int getUsersIdSize() {
-        return users_id.size();
+        synchronized (lock) {
+            return users_id.size();
+        }
     }
 
     // Phương thức trả về kích thước của users_username
     public static int getUsersUsernameSize() {
-        return users_name.size();
+        synchronized (lock) {
+            return users_name.size();
+        }
     }
     
     public static void loadUser() throws SQLException {

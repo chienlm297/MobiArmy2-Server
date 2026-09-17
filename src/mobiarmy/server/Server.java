@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import mobiarmy.admin.AdminServer;
+import mobiarmy.admin.AdminService;
 import mobiarmy.io.Message;
 import mobiarmy.war.MapData;
 import mobiarmy.war.Player;
@@ -21,6 +23,8 @@ public class Server {
     private boolean is_start;
     private ServerSocket server;
     private Thread updateThread;
+    private AdminServer adminServer;
+    private static volatile long startedAt;
     public static final ArrayList<Command> CMD = new ArrayList<>();
     
     public static class Command  {
@@ -90,12 +94,20 @@ public class Server {
             });
             
             Bot.generateBot();
+
+            try {
+                AdminService.ensureSchema();
+                adminServer = AdminServer.startIfEnabled();
+            } catch (IOException | SQLException ex) {
+                throw new IllegalStateException("Cannot start web admin", ex);
+            }
             
             try {
                 try {
                     System.out.println("Start server port:"+this.port);
                     this.server = new ServerSocket(this.port);
                     this.is_start = true;
+                    startedAt = System.currentTimeMillis();
                     updateThread.start();
                     for (int i = 0;this.is_start; i++) {
                         Session session = new Session(this.server.accept(), i);
@@ -151,6 +163,10 @@ public class Server {
     }
     
     public void stop() {
+        if (adminServer != null) {
+            adminServer.stop();
+            adminServer = null;
+        }
         if (this.is_start) {
             try {
                 this.server.close();
@@ -168,6 +184,10 @@ public class Server {
     
     public boolean isRunning() {
         return is_start;
+    }
+
+    public static long getStartedAt() {
+        return startedAt;
     }
     
     public static void addCommand(Session session, Message message) {

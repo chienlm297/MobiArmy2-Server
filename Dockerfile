@@ -18,6 +18,6 @@ COPY lib/ ./lib/
 COPY res/ ./res/
 COPY cache/ ./cache/
 
-EXPOSE 8122
+EXPOSE 8122 8080
 
 ENTRYPOINT ["java", "-cp", "MobiArmy.jar:lib/*", "mobiarmy.MobiArmy"]

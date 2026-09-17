@@ -87,13 +87,13 @@ public class User {
         return this.glass[this.selectGlass];
     }
     
-    public void addXu(int add, boolean flag) {
+    public synchronized void addXu(int add, boolean flag) {
         if (this.xu + add > Integer.MAX_VALUE) {
             this.xu = Integer.MAX_VALUE;
         } else {
             this.xu = this.xu + add;
         }
-        if (flag) {
+        if (flag && this.session != null) {
             this.session.sessionHandler.setXuLuong(this.xu, this.luong);
         }
     }
@@ -109,14 +109,22 @@ public class User {
         }
     }
 
-    public void addLuong(int add, boolean flag) {
+    public synchronized void addLuong(int add, boolean flag) {
         if (this.luong + add > Integer.MAX_VALUE) {
             this.luong = Integer.MAX_VALUE;
         } else {
             this.luong = this.luong + add;
         }
 
-        if (flag) {
+        if (flag && this.session != null) {
+            this.session.sessionHandler.setXuLuong(this.xu, this.luong);
+        }
+    }
+
+    public synchronized void setWallet(long xu, long luong, boolean notify) {
+        this.xu = Math.max(0, Math.min(Integer.MAX_VALUE, xu));
+        this.luong = Math.max(0, Math.min(Integer.MAX_VALUE, luong));
+        if (notify && this.session != null && this.session.connected) {
             this.session.sessionHandler.setXuLuong(this.xu, this.luong);
         }
     }

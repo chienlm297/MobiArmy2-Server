@@ -1,3 +1,5 @@
+src/mobiarmy/admin/AdminServer.java
+src/mobiarmy/admin/AdminService.java
 src/mobiarmy/Util.java
 src/mobiarmy/war/MapData.java
 src/mobiarmy/war/PathSimulator.java

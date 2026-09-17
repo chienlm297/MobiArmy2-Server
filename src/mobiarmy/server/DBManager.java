@@ -24,6 +24,10 @@ public class DBManager {
         this.dataSource = new HikariDataSource(config);
     }
 
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
     public ArrayList<Object[]> selectColumnIndex(String sql, Object... params) throws SQLException {
         ArrayList<Object[]> resultList = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();

@@ -9,6 +9,7 @@ import mobiarmy.io.Message;
 import mobiarmy.server.DBManager.DataRow;
 import static mobiarmy.server.Text.__;
 import org.mindrot.jbcrypt.BCrypt;
+import mobiarmy.admin.AdminService;
 
 /**
  *
@@ -135,6 +136,13 @@ public class ControlHandler {
                         if (rows.isEmpty() || !BCrypt.checkpw(pass, rows.get(0).getString("password").replaceFirst("^\\$2[aby]\\$", "\\$2a\\$"))) {
                             this.session.sessionHandler.log(__("Thông tin tài khoản hoặc mật khẩu không chính xác."));
                         } else {
+                            int userId = rows.get(0).getInt("id");
+                            String banMessage = AdminService.activeBanMessage(userId);
+                            if (banMessage != null) {
+                                this.session.sessionHandler.log(__(banMessage));
+                                this.session.requestDisconnect();
+                                break;
+                            }
                             User user = SessionManager.findUserById(rows.get(0).getInt("id"));
                             if (user == null) {
                                 user = new User(rows.get(0).getInt("id"), rows.get(0).getString("username"));

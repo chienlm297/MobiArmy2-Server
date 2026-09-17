@@ -22,6 +22,39 @@ Hai lệnh phải trả về phiên bản 21 hoặc mới hơn.
 
 Phần này chạy Java trực tiếp trên máy và chỉ dùng Docker cho MySQL. Không chạy đồng thời server thủ công và service `server` của Docker Compose vì cả hai cùng sử dụng cổng `8122`.
 
+### Cách nhanh: dùng một script
+
+Script sau tự build JAR, tạo hoặc khởi động MySQL, đợi import dữ liệu xong, rồi chạy game server và web admin:
+
+```bash
+./run-manual.sh
+```
+
+Đổi tài khoản admin:
+
+```bash
+ADMIN_USERNAME=myadmin \
+ADMIN_PASSWORD='mat-khau-manh' \
+./run-manual.sh
+```
+
+Các chế độ khác:
+
+```bash
+./run-manual.sh build
+./run-manual.sh run-no-build
+./run-manual.sh --help
+```
+
+Khi chạy thành công:
+
+- Game server mở tại cổng `8122`.
+- Web admin mở tại [http://127.0.0.1:8080](http://127.0.0.1:8080).
+- Nhấn `Ctrl+C` tại terminal chạy script để dừng game server và web admin.
+- MySQL container vẫn chạy để giữ database; dừng bằng `docker stop mobiarmy-mysql` nếu cần.
+
+Các bước bên dưới là quy trình tương đương nếu muốn chạy từng lệnh riêng.
+
 ### Bước 1: dừng stack Compose nếu đang chạy
 
 Lệnh này giữ nguyên dữ liệu Compose:
@@ -186,6 +219,30 @@ docker compose ps
 docker compose logs -f server
 ```
 
+Compose bật web admin tại [http://127.0.0.1:8080](http://127.0.0.1:8080). Tài khoản development mặc định:
+
+```text
+Username: admin
+Password: admin123
+```
+
+Phải đổi mật khẩu khi chạy ngoài máy development:
+
+```bash
+ADMIN_USERNAME=myadmin ADMIN_PASSWORD='mat-khau-manh' docker compose up -d --build
+```
+
+Web admin hiện hỗ trợ:
+
+- Dashboard uptime, TCP session, user online và user đã load.
+- Tìm theo ID, username hoặc tên nhân vật.
+- Cộng/trừ xu và lượng, đồng bộ với user đang online.
+- Kick user.
+- Ban vĩnh viễn hoặc theo số phút và unban.
+- Wallet transaction và audit log.
+
+Database tự tạo thêm các bảng `user_ban`, `wallet_transaction` và `admin_audit_log` khi admin khởi động.
+
 Trạng thái đúng là service `db` hiển thị `healthy`, service `server` hiển thị `Up`, và log server có dòng `Start server port:8122`.
 
 Dừng stack nhưng giữ dữ liệu:
@@ -193,6 +250,20 @@ Dừng stack nhưng giữ dữ liệu:
 ```bash
 docker compose down
 ```
+
+### Bật web admin khi chạy Java thủ công
+
+```bash
+ADMIN_ENABLED=true \
+ADMIN_HOST=127.0.0.1 \
+ADMIN_PORT=8080 \
+ADMIN_USERNAME=admin \
+ADMIN_PASSWORD='mat-khau-manh' \
+MOBIARMY_HEADLESS=true \
+java -jar dist/MobiArmy.jar
+```
+
+Không đặt `ADMIN_HOST=0.0.0.0` trên server public nếu chưa có reverse proxy HTTPS và firewall.
 
 ## Các lỗi thường gặp
 

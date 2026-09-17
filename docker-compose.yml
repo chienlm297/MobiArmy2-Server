@@ -32,8 +32,14 @@ services:
       DB_URL: jdbc:mysql://db:3306/army?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USER: root
       DB_PASSWORD: ""
+      ADMIN_ENABLED: "true"
+      ADMIN_HOST: "0.0.0.0"
+      ADMIN_PORT: "8080"
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
     ports:
       - "8122:8122"
+      - "127.0.0.1:8080:8080"
     restart: unless-stopped
 
 volumes:
