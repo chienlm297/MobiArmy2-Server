@@ -18,6 +18,7 @@ public class ShopEquipment {
         for (int i = 0; i < rows.size(); i++) {
             entrys[i] = Equip.get(rows.get(i).getByte("glassID"), rows.get(i).getByte("equipId")).deepCopy();
             entrys[i].name = rows.get(i).getString("name");
+            entrys[i].name = entrys[i].displayName();
             entrys[i].xu = rows.get(i).getInt("xu");
             entrys[i].luong = rows.get(i).getInt("luong");
             entrys[i].inv_ability = new Gson().fromJson(rows.get(i).getString("inv_ability"), byte[].class);

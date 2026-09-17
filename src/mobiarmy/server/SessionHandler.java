@@ -19,6 +19,10 @@ public class SessionHandler {
     public SessionHandler(Session session) {
         this.session = session;
     }
+
+    private static String safeText(String value, String fallback) {
+        return value == null ? fallback : value;
+    }
     
     
     
@@ -287,7 +291,7 @@ public class SessionHandler {
                 message.writer().writeByte(equip.glassID);
                 message.writer().writeByte(equip.type);
                 message.writer().writeShort(equip.id);
-                message.writer().writeUTF(equip.name);
+                message.writer().writeUTF(equip.displayName());
                 message.writer().writeByte(equip.inv_ability.length*2);
                 for(int i = 0; i < equip.inv_ability.length; i++) {
                     message.writer().writeByte(equip.inv_ability[i]);
@@ -310,8 +314,8 @@ public class SessionHandler {
             for (LinhTinh item : this.session.user.linhtinhs) {
                 message.writer().writeByte(item.id);
                 message.writer().writeShort(item.num);
-                message.writer().writeUTF(item.name);
-                message.writer().writeUTF(item.detail);
+                message.writer().writeUTF(safeText(item.name, "Vật phẩm #" + (item.id & 0xFF)));
+                message.writer().writeUTF(safeText(item.detail, ""));
             }
             this.session.sendMessage(message);
         } catch (IOException ex){}
@@ -422,7 +426,7 @@ public class SessionHandler {
                 message.writer().writeByte(equip.glassID);
                 message.writer().writeByte(equip.type);
                 message.writer().writeShort(equip.id);
-                message.writer().writeUTF(equip.name);
+                message.writer().writeUTF(equip.displayName());
                 message.writer().writeInt(equip.xu);
                 message.writer().writeInt(equip.luong);
                 message.writer().writeByte(equip.date());
@@ -538,7 +542,7 @@ public class SessionHandler {
             message.writer().writeByte(equip.glassID);
             message.writer().writeByte(equip.type);
             message.writer().writeShort(equip.id);
-            message.writer().writeUTF(equip.name);
+            message.writer().writeUTF(equip.displayName());
             message.writer().writeByte(equip.inv_ability.length * 2);
             for(int i = 0; i < equip.inv_ability.length; i++) {
                 message.writer().writeByte(equip.inv_ability[i]);

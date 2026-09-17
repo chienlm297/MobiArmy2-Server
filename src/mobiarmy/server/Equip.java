@@ -37,6 +37,13 @@ public class Equip {
     public Equip() {
         this.slot = new short[]{-1, -1, -1};
     }
+
+    public String displayName() {
+        if (this.name != null && !this.name.isBlank()) {
+            return this.name;
+        }
+        return "Trang bị #" + (this.glassID & 0xFF) + ":" + (this.id & 0xFFFF);
+    }
     
     public int slot() {
         int num = this.slot.length;
@@ -117,6 +124,7 @@ public class Equip {
             entrys[i].luong = rows.get(i).getInt("luong");
             entrys[i].xu = rows.get(i).getInt("xu");
             entrys[i].name = rows.get(i).getString("name");
+            entrys[i].name = entrys[i].displayName();
             entrys[i].vip = rows.get(i).getByte("vip");
             entrys[i].data = new Gson().fromJson(rows.get(i).getString("data"), short[].class);
             equipsByGlassIDAndType

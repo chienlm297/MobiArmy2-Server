@@ -9,7 +9,7 @@ import mobiarmy.io.Message;
 import mobiarmy.server.DBManager.DataRow;
 import static mobiarmy.server.Text.__;
 import org.mindrot.jbcrypt.BCrypt;
-import mobiarmy.admin.AdminService;
+import mobiarmy.admin.PlayerAdminService;
 
 /**
  *
@@ -137,7 +137,7 @@ public class ControlHandler {
                             this.session.sessionHandler.log(__("Thông tin tài khoản hoặc mật khẩu không chính xác."));
                         } else {
                             int userId = rows.get(0).getInt("id");
-                            String banMessage = AdminService.activeBanMessage(userId);
+                            String banMessage = PlayerAdminService.loginBlockMessage(userId);
                             if (banMessage != null) {
                                 this.session.sessionHandler.log(__(banMessage));
                                 this.session.requestDisconnect();

@@ -574,6 +574,14 @@ INSERT INTO `equip` (`glassID`, `id`, `type`, `bullet`, `icon`, `level`, `x`, `y
 (0, 50, 3, -1, 108, 50, '[163, 163, 80, 80, 163, 163]', '[125, 125, 154, 154, 125, 125]', '[7, 7, 6, 6, 7, 7]', '[4, 4, 6, 6, 4, 4]', '[-13, -12, -7, -8, -12, -12]', '[-29, -29, -32, -33, -31, -30]', '[15, 15, 15, 15, 15]', '[8, 8, 8, 8, 8]', 0, NULL, 30, 400, -1, 'kính vàng'),
 (0, 51, 4, -1, 280, 50, '[202, 202, 163, 163, 202, 202]', '[144, 144, 129, 129, 144, 144]', '[6, 6, 7, 7, 6, 6]', '[9, 9, 7, 7, 9, 9]', '[-4, -3, -3, -4, -3, -3]', '[-27, -27, -25, -25, -28, -27]', '[15, 15, 15, 15, 15]', '[8, 8, 8, 8, 8]', 0, NULL, 30, 400, -1, 'balo vàng');
 
+-- Tên trang bị được gửi bằng DataOutputStream.writeUTF nên không được phép NULL.
+UPDATE `equip`
+SET `name` = CONCAT('Trang bị #', `glassID`, ':', `id`)
+WHERE `name` IS NULL OR TRIM(`name`) = '';
+
+ALTER TABLE `equip`
+  MODIFY `name` varchar(255) NOT NULL;
+
 -- --------------------------------------------------------
 
 --
@@ -2365,10 +2373,26 @@ CREATE TABLE `admin_audit_log` (
   `action` varchar(64) NOT NULL,
   `target_user_id` int(11) DEFAULT NULL,
   `detail` varchar(1000) NOT NULL,
+  `reason` varchar(500) DEFAULT NULL,
+  `before_data` json DEFAULT NULL,
+  `after_data` json DEFAULT NULL,
+  `request_id` varchar(64) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `audit_created_idx` (`created_at`),
   KEY `audit_target_idx` (`target_user_id`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `user_account_state` (
+  `user_id` int(11) NOT NULL,
+  `status` varchar(16) NOT NULL DEFAULT 'ACTIVE',
+  `reason` varchar(500) DEFAULT NULL,
+  `updated_by` varchar(100) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `deleted_by` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `user_account_state_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 COMMIT;
 

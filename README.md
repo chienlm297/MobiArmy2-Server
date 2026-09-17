@@ -103,7 +103,7 @@ Kết quả đúng:
 
 ```text
 mysqld is alive
-21
+25
 ```
 
 Nếu MySQL chưa sẵn sàng, xem quá trình import bằng:
@@ -236,12 +236,24 @@ Web admin hiện hỗ trợ:
 
 - Dashboard uptime, TCP session, user online và user đã load.
 - Tìm theo ID, username hoặc tên nhân vật.
+- Tạo tài khoản người chơi mới với mật khẩu BCrypt, số dư ban đầu và dữ liệu game mặc định.
+- Xem hồ sơ chi tiết theo tab: tổng quan, nhân vật, trang bị, vật phẩm, nhiệm vụ, bạn bè và lịch sử.
 - Cộng/trừ xu và lượng, đồng bộ với user đang online.
+- Reset mật khẩu bằng BCrypt; đổi tên nhân vật với kiểm tra trùng tên.
+- Khóa/mở khóa đăng nhập nhanh; xóa mềm và khôi phục tài khoản.
+- Cộng/trừ cup; chỉnh EXP, điểm và bộ chỉ số của từng nhân vật.
+- Thêm/trừ item, đồ đặc biệt; cấp hoặc xóa trang bị.
 - Kick user.
 - Ban vĩnh viễn hoặc theo số phút và unban.
-- Wallet transaction và audit log.
+- Wallet transaction và audit log có lý do bắt buộc, request ID, dữ liệu trước/sau.
 
-Database tự tạo thêm các bảng `user_ban`, `wallet_transaction` và `admin_audit_log` khi admin khởi động.
+Database tự tạo thêm các bảng `user_ban`, `wallet_transaction`, `admin_audit_log` và
+`user_account_state` khi admin khởi động. Khi nâng cấp từ bản cũ, server tự thêm các cột
+`reason`, `before_data`, `after_data` và `request_id` còn thiếu trong `admin_audit_log`.
+File `army.sql` cũng đã chứa đầy đủ schema này cho database khởi tạo mới.
+
+Mọi form làm thay đổi dữ liệu đều bắt buộc nhập lý do. Xóa tài khoản trên web admin là
+xóa mềm: user bị chặn đăng nhập nhưng các bảng dữ liệu game vẫn được giữ để có thể khôi phục.
 
 Trạng thái đúng là service `db` hiển thị `healthy`, service `server` hiển thị `Up`, và log server có dòng `Start server port:8122`.
 
@@ -285,6 +297,29 @@ MySQL chưa chạy hoặc chưa import xong. Kiểm tra:
 docker start mobiarmy-mysql
 docker exec mobiarmy-mysql mysqladmin ping -h 127.0.0.1 -uroot
 ```
+
+### `NullPointerException` tại `SessionHandler.updateRuong` / `DataOutputStream.writeUTF`
+
+Dữ liệu cũ có thể chứa `equip.name = NULL`. Bản server hiện tại tự dùng tên dự phòng
+`Trang bị #<glassID>:<id>`, nhưng phải build và khởi động lại Java để nạp mã mới:
+
+```bash
+bash build.sh
+MOBIARMY_HEADLESS=true java -jar dist/MobiArmy.jar
+```
+
+Với database Compose đã tồn tại, chuẩn hóa dữ liệu một lần bằng:
+
+```bash
+docker compose exec db mysql -uroot -Darmy -e "
+UPDATE equip
+SET name = CONCAT('Trang bị #', glassID, ':', id)
+WHERE name IS NULL OR TRIM(name) = '';
+ALTER TABLE equip MODIFY name varchar(255) NOT NULL;
+"
+```
+
+`army.sql` đã tự thực hiện bước chuẩn hóa này cho database được tạo mới.
 
 ### `BindException: Address already in use` tại cổng 8122
 

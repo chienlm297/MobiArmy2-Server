@@ -108,6 +108,18 @@ public class SessionManager {
             return users_name.get(username);
         }
     }
+
+    /**
+     * Keeps the in-memory name index consistent when an administrator renames
+     * a character. The caller is responsible for persisting the new name first.
+     */
+    public static void renameUser(User user, String newName) {
+        synchronized (lock) {
+            users_name.remove(user.name);
+            user.name = newName;
+            users_name.put(newName, user);
+        }
+    }
     
     // Phương thức trả về kích thước của sessions
     public static int getSessionsSize() {

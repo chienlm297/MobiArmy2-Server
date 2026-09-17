@@ -7,6 +7,7 @@
 - [x] Đăng nhập bằng session cookie và CSRF token.
 - [x] Dashboard trạng thái server, session và người chơi online.
 - [x] Tìm user theo ID, username hoặc tên nhân vật.
+- [x] Tạo user mới với dữ liệu mặc định, mật khẩu BCrypt và audit log.
 - [x] Cộng/trừ xu và lượng, đồng bộ user online và database.
 - [x] Ghi lịch sử thay đổi số dư.
 - [x] Kick user đang online.
@@ -14,8 +15,15 @@
 - [x] Unban và chặn user bị ban tại bước đăng nhập game.
 - [x] Audit log cho wallet, kick, ban và unban.
 - [ ] Broadcast thông báo toàn server từ web admin.
-- [ ] Trang chi tiết trang bị, item, nhiệm vụ và bạn bè.
-- [ ] Đổi mật khẩu game user.
+- [x] Trang chi tiết người chơi với tổng quan, nhân vật, trang bị, item, nhiệm vụ và bạn bè.
+- [x] Lịch sử thay đổi số dư và audit log theo từng người chơi.
+- [x] Đổi/reset mật khẩu game user bằng BCrypt.
+- [x] Khóa/mở khóa đăng nhập nhanh và chặn ngay tại luồng đăng nhập game.
+- [x] Đổi tên nhân vật, kiểm tra trùng tên và đồng bộ chỉ mục trong RAM.
+- [x] Xóa mềm/khôi phục tài khoản, giữ nguyên toàn bộ dữ liệu game.
+- [x] Cộng/trừ cup; chỉnh EXP, cấp độ suy ra, điểm và ability nhân vật.
+- [x] Thêm/trừ item, đồ đặc biệt; thêm/xóa trang bị.
+- [x] Audit có lý do bắt buộc, request ID và JSON dữ liệu trước/sau.
 
 ## An toàn và phân quyền
 
@@ -44,7 +52,8 @@
 - [ ] Dùng Flyway thay cho tự tạo bảng lúc khởi động.
 - [ ] Tách tài khoản database riêng, bỏ `root` mật khẩu rỗng.
 - [ ] Backup/restore database từ quy trình vận hành bên ngoài admin.
-- [ ] Test tích hợp admin với MySQL và game session giả lập.
+- [x] Test tích hợp các route admin và migration schema với MySQL thật.
+- [ ] Test tự động game session giả lập cho đồng bộ user đang online.
 
 ## Giao diện nâng cao
 
@@ -52,4 +61,5 @@
 - [ ] Log realtime bằng SSE/WebSocket.
 - [ ] Quản lý phòng, trận và người chơi trong phòng.
 - [ ] Lịch sử đăng nhập, IP và phiên bản client.
-- [ ] Responsive UI và thông báo kết quả không cần tải lại trang.
+- [x] Làm mới giao diện responsive cho dashboard, đăng nhập và trang người chơi.
+- [ ] Thông báo kết quả không cần tải lại trang.
