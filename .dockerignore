@@ -1,0 +1,9 @@
+.git
+.github
+.agents
+.codex
+build
+dist
+nbproject
+test
+*.md

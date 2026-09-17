@@ -35,7 +35,16 @@ public class Server {
         
     }
     
-    public static final DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/army", "root", "");
+    public static final DBManager dbManager = new DBManager(
+            env("DB_URL", "jdbc:mysql://localhost:3306/army"),
+            env("DB_USER", "root"),
+            env("DB_PASSWORD", "")
+    );
+
+    private static String env(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? defaultValue : value;
+    }
     
     public Server(int port) {
         this.port = port;

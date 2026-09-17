@@ -25,7 +25,7 @@ public class MobiArmy extends JFrame {
         createUI();
 
         // Khởi tạo server (cấu hình cổng mặc định 8122)
-        server = new Server(8122);
+        server = new Server(serverPort());
     }
 
     private void createUI() {
@@ -96,10 +96,23 @@ public class MobiArmy extends JFrame {
     }
 
     public static void main(String[] args) {
+        if (GraphicsEnvironment.isHeadless()
+                || Boolean.parseBoolean(System.getenv("MOBIARMY_HEADLESS"))) {
+            Server server = new Server(serverPort());
+            Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
+            server.start();
+            return;
+        }
+
         // Tạo và hiển thị giao diện
         SwingUtilities.invokeLater(() -> {
             MobiArmy manager = new MobiArmy();
             manager.setVisible(true);
         });
+    }
+
+    private static int serverPort() {
+        String value = System.getenv("MOBIARMY_PORT");
+        return value == null || value.isBlank() ? 8122 : Integer.parseInt(value);
     }
 }
