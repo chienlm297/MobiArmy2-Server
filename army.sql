@@ -2394,6 +2394,18 @@ CREATE TABLE `user_account_state` (
   PRIMARY KEY (`user_id`),
   CONSTRAINT `user_account_state_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Admin credentials are bootstrapped from ADMIN_USERNAME/ADMIN_PASSWORD only when empty.
+CREATE TABLE `admin_account` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `username` varchar(32) NOT NULL UNIQUE,
+  `password_hash` varchar(100) NOT NULL,
+  `role` varchar(16) NOT NULL,
+  `enabled` boolean NOT NULL DEFAULT TRUE,
+  `session_version` int NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

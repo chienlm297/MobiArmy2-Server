@@ -140,7 +140,6 @@ public final class AdminService {
                 WHERE (? = '' OR CAST(u.id AS CHAR) = ?
                        OR LOWER(u.username) LIKE LOWER(?) OR LOWER(p.name) LIKE LOWER(?))
                 ORDER BY u.id
-                LIMIT 200
                 """;
         try (Connection connection = Server.dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -185,6 +184,25 @@ public final class AdminService {
             }
         }
         return users;
+    }
+
+    public record UserPage(List<UserSummary> rows, int total, int page, int pages, String filter) {}
+
+    public static UserPage searchUsers(String query, String filter, int page) throws SQLException {
+        if (!java.util.Set.of("ALL", "ONLINE", "OFFLINE", "BANNED", "LOCKED", "DELETED").contains(filter))
+            throw new IllegalArgumentException("Bộ lọc không hợp lệ");
+        List<UserSummary> matches = findUsers(query).stream().filter(u -> switch (filter) {
+            case "ONLINE" -> u.online();
+            case "OFFLINE" -> !u.online();
+            case "BANNED" -> u.banned();
+            case "LOCKED" -> "LOCKED".equals(u.accountStatus());
+            case "DELETED" -> "DELETED".equals(u.accountStatus());
+            default -> true;
+        }).toList();
+        int pages = Math.max(1, (matches.size() + 24) / 25);
+        page = Math.max(1, Math.min(page, pages));
+        return new UserPage(matches.subList((page - 1) * 25, Math.min(page * 25, matches.size())),
+                matches.size(), page, pages, filter);
     }
 
     public static UserDetail getUserDetail(int userId) throws SQLException {
@@ -883,7 +901,7 @@ public final class AdminService {
         }
     }
 
-    private static void insertAudit(Connection connection, String adminUsername, String action,
+    static void insertAudit(Connection connection, String adminUsername, String action,
                                     Integer targetUserId, String detail, String reason,
                                     String beforeData, String afterData) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement("""

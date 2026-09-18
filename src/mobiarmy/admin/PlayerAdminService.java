@@ -66,6 +66,11 @@ public final class PlayerAdminService {
 
     public static void changeAccountState(int userId, String status, String reason,
                                           String adminUsername) throws SQLException {
+        changeAccountState(userId, status, reason, adminUsername, true);
+    }
+
+    public static void changeAccountState(int userId, String status, String reason,
+                                          String adminUsername, boolean allowRestore) throws SQLException {
         requireReason(reason);
         if (!"ACTIVE".equals(status) && !"LOCKED".equals(status) && !"DELETED".equals(status)) {
             throw new IllegalArgumentException("Trạng thái tài khoản không hợp lệ");
@@ -76,6 +81,8 @@ public final class PlayerAdminService {
             try {
                 requireUser(connection, userId);
                 before = readAccountStatus(connection, userId);
+                if ("DELETED".equals(before) && !allowRestore)
+                    throw new SecurityException("Không có quyền thay đổi tài khoản đã xóa mềm");
                 try (PreparedStatement statement = connection.prepareStatement("""
                         INSERT INTO user_account_state
                             (user_id, status, reason, updated_by, updated_at, deleted_at, deleted_by)

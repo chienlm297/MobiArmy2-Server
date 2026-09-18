@@ -158,8 +158,10 @@ public class Server {
             } catch (IOException e) {
             }
         }
+        mobiarmy.admin.AdminBots.tick();
         RoomInfo.update();
         Bot.updateBot();
+        mobiarmy.admin.AdminOperations.captureRooms();
     }
     
     public void stop() {

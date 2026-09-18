@@ -29,6 +29,12 @@ services:
     environment:
       MOBIARMY_HEADLESS: "true"
       MOBIARMY_PORT: "8122"
+      BOT_COUNT: ${BOT_COUNT:-5000}
+      BOT_AUTO_JOIN: ${BOT_AUTO_JOIN:-false}
+      BOT_REQUIRE_HUMAN: ${BOT_REQUIRE_HUMAN:-true}
+      BOT_READY_DELAY_MS: ${BOT_READY_DELAY_MS:-2000}
+      BOT_LEAVE_DELAY_MS: ${BOT_LEAVE_DELAY_MS:-120000}
+      BOT_TARGET_MODE: ${BOT_TARGET_MODE:-RANDOM}
       DB_URL: jdbc:mysql://db:3306/army?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USER: root
       DB_PASSWORD: ""

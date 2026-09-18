@@ -14,7 +14,7 @@
 - [x] Ban vĩnh viễn hoặc theo số phút.
 - [x] Unban và chặn user bị ban tại bước đăng nhập game.
 - [x] Audit log cho wallet, kick, ban và unban.
-- [ ] Broadcast thông báo toàn server từ web admin.
+- [x] Broadcast thông báo toàn server từ web admin.
 - [x] Trang chi tiết người chơi với tổng quan, nhân vật, trang bị, item, nhiệm vụ và bạn bè.
 - [x] Lịch sử thay đổi số dư và audit log theo từng người chơi.
 - [x] Đổi/reset mật khẩu game user bằng BCrypt.
@@ -27,8 +27,8 @@
 
 ## An toàn và phân quyền
 
-- [ ] Lưu tài khoản admin trong bảng `admin_account` bằng BCrypt.
-- [ ] Role `OWNER`, `ADMIN`, `MODERATOR`, `VIEWER`.
+- [x] Lưu tài khoản admin trong bảng `admin_account` bằng BCrypt.
+- [x] Role `OWNER`, `ADMIN`, `MODERATOR`, `VIEWER`.
 - [ ] Rate limit đăng nhập admin và khóa tạm khi sai nhiều lần.
 - [ ] Bắt buộc HTTPS khi bind admin ra ngoài localhost.
 - [ ] Idempotency key cho thao tác wallet.
@@ -57,9 +57,39 @@
 
 ## Giao diện nâng cao
 
-- [ ] Phân trang và bộ lọc user.
+- [x] Phân trang và bộ lọc user.
 - [ ] Log realtime bằng SSE/WebSocket.
-- [ ] Quản lý phòng, trận và người chơi trong phòng.
+- [x] Xem phòng/trận: map, thành viên, HP, lượt, thời lượng qua snapshot game loop.
+- [ ] Điều khiển phòng/trận từ web admin.
 - [ ] Lịch sử đăng nhập, IP và phiên bản client.
 - [x] Làm mới giao diện responsive cho dashboard, đăng nhập và trang người chơi.
 - [ ] Thông báo kết quả không cần tải lại trang.
+
+## Bổ sung ưu tiên cao
+
+- [x] Form chỉ số có tên, kiểm tra giới hạn phía server.
+- [x] Catalog vật phẩm/trang bị tìm theo tên/ID; ảnh xem trước cho item.
+- [x] Thu hồi session khi đổi quyền, mật khẩu hoặc vô hiệu hóa admin.
+- [x] Bảo vệ OWNER cuối cùng và chặn moderator khôi phục tài khoản đã xóa mềm.
+- [x] Bổ sung schema admin_account vào army.sql và migration lúc khởi động.
+- [x] 118 kiểm tra HTTP/SQL trên MySQL thật, gồm 211 user để kiểm tra phân trang.
+- [x] 11 kiểm tra snapshot phòng/trận và 7 kiểm tra bootstrap/broadcast với session mô phỏng.
+- [x] Chrome: tìm vật phẩm không dấu, ảnh preview và 15 tổ hợp trang/kích thước 1440, 390, 320 px.
+- [ ] Kiểm thử nghiệm thu bằng hai client game thật: chơi trận và nhận broadcast.
+
+## Bot: vòng đời và hành vi
+
+- [x] Sửa remove, dọn chỉ mục, chống đăng ký trùng và xử lý xóa bot bị lock.
+- [x] Reset timer theo lần vào phòng/kết thúc trận; không rời giữa trận do timeout.
+- [x] Cấu hình BOT_COUNT, AUTO_JOIN, REQUIRE_HUMAN, thời gian chờ và TARGET_MODE.
+- [x] Thêm LOW_HP; lọc mục tiêu chết/rời trận, xóa danh sách cũ mỗi lượt.
+- [x] Sửa hướng di chuyển nhỏ; bỏ lời mời xung đột khi đã ở phòng.
+- [x] Build và 40 kiểm tra bot bằng fixture, không tác động DB.
+- [ ] Nghiệm thu bot với client thật, đo CPU theo số bot.
+- [ ] Executor/timeout/cancellation cho tính đường đạn và công bố kết quả thread-safe.
+- [ ] Độ khó, tìm vị trí bắn có địa hình hợp lệ, giới hạn thử ép ngọc.
+- [x] Trang quản trị bot: tìm/lọc/phân trang, tạo, rời phòng chờ, xóa và chọn mục tiêu riêng.
+- [x] Hàng đợi bot có giới hạn/hạn chờ, kiểm tra quyền lại, audit yêu cầu/kết quả, snapshot chỉ đọc.
+- [x] Chặn xóa/rời phòng khi bot đã vào trận; giới hạn vòng ép ngọc khi tạo bot.
+- [x] 15 kiểm tra quản trị bot; 156 kiểm tra HTTP/SQL toàn admin; 18 tổ hợp viewport/trang trên Chrome.
+- [ ] Metrics bot, lưu bền cấu hình riêng và benchmark độ trễ lệnh. Xem docs/bot-improvements.md.

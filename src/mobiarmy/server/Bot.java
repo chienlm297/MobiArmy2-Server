@@ -5,6 +5,7 @@ import java.util.HashMap;
 import mobiarmy.Util;
 import mobiarmy.war.Boss.bullet.BulletTrajectory;
 import mobiarmy.war.PathSimulator;
+import mobiarmy.war.MapData;
 import mobiarmy.war.Player;
 import mobiarmy.war.RoomInfo;
 import mobiarmy.war.RoomWait;
@@ -16,12 +17,22 @@ import mobiarmy.war.RoomWait;
 public class Bot extends User {
     
     public boolean remove = false;
+    // Modified by the game loop; null follows startup configuration.
+    public BotSettings.TargetMode targetModeOverride;
+    public BotSettings.TargetMode effectiveTargetMode() {
+        return targetModeOverride == null ? SETTINGS.targetMode() : targetModeOverride;
+    }
     public Object[] invited = null;
     public long waitJoinAnyBoard;
     public long waitInvited;
     public long waitReady;
     public long waitLeave;
     private boolean isLand = true;
+    static final BotSettings SETTINGS = BotSettings.fromEnvironment(System.getenv());
+    private RoomWait observedRoom;
+    private boolean observedStarted;
+    private MapData observedMap;
+    private int observedTurn = -1;
     private final ArrayList<Player> selecteds = new ArrayList<>();
 
     public Bot(int id, String name) {
@@ -30,42 +41,41 @@ public class Bot extends User {
     
     @Override
     public void update() {
-        super.update();
-        //Nếu bot ở phòng chờ sẽ sẵn sàng chơi
-        if (System.currentTimeMillis() > this.waitReady) {
-            this.waitReady = System.currentTimeMillis() + Util.nextInt(5000);
-            //Nếu chủ phòng sẽ bắt đầu nếu trong map có người thật
-            if (super.roomWait != null && !super.roomWait.started) {
-                if (super.roomWait.userID == super.id) {
-                    for (User player : super.roomWait.players) {
-//                        if (player != null && !(player instanceof Bot)) {
-                            super.startGame();
-                            break;
-//                        }
-                    }
-                } else if (!super.ready) {
-                    super.ready();
+        if (this.remove) {
+            this.remove();
+            return;
+        }
+        long now = System.currentTimeMillis();
+        observeRoom(now);
+        // Each waiting-room visit (including after a match) gets a fresh timeout.
+        if (roomWait != null && !roomWait.started && now >= waitLeave) {
+            leaveRoomWait();
+            observeRoom(now);
+        }
+        if (now >= waitReady) {
+            waitReady = now + SETTINGS.readyDelayMs();
+            if (roomWait != null && !roomWait.started) {
+                if (roomWait.userID == id) {
+                    if (!SETTINGS.requireHuman() || hasConnectedHuman(roomWait)) startGame();
+                } else if (!ready) {
+                    ready();
                 }
             }
-        }
-        //Nếu bot ở phòng chờ lâu sẽ rời đi
-        if (System.currentTimeMillis() > this.waitLeave) {
-            this.waitLeave = System.currentTimeMillis() + Util.nextInt(120000);
-            if (super.roomWait != null && !super.roomWait.started) {
-                if (super.ready) {
-                    super.ready();
-                }
-                super.leaveRoomWait();
-            }
-        }
-        //Nếu phòng chờ toàn bot sẽ đi ra
-        if (super.roomWait != null && super.id == super.roomWait.userID) {
-            //super.leaveRoomWait();
         }
         //Nếu trong trận và đến lượt
-        if (super.roomWait != null && super.roomWait.started && super.roomWait.mapData.getTurn() == super.index) {
+        if (super.roomWait != null && super.roomWait.started && super.roomWait.mapData != null
+                && super.index >= 0 && super.index < super.roomWait.mapData.players.length
+                && super.roomWait.mapData.getTurn() == super.index) {
             Player me = super.roomWait.mapData.players[super.index];
-            if (!me.isShoot && System.currentTimeMillis() > me.mapData.timeUntilAction2) {
+            if (observedMap != roomWait.mapData || observedTurn != roomWait.mapData.nTurn) {
+                selecteds.clear();
+                isLand = true;
+                observedMap = roomWait.mapData;
+                observedTurn = observedMap.nTurn;
+            }
+            selecteds.removeIf(target -> !isTarget(me, target)
+                    || !java.util.Arrays.asList(roomWait.mapData.players).contains(target));
+            if (me != null && !me.isDie && !me.isShoot && System.currentTimeMillis() > me.mapData.timeUntilAction2) {
                 //Dùng item
                 if (!me.isUseItem) {
                     //Kĩ năng đặc biệt
@@ -79,28 +89,18 @@ public class Bot extends User {
                         if (me.buocdi == 0) {
                             this.isLand = true;
                         }
-                        PathSimulator simulator = new PathSimulator(me.x, me.y, me.x + Util.nextInt(-1, 1), me.y, me.mapData);
+                        PathSimulator simulator = new PathSimulator(me.x, me.y, me.x + Util.nextInt(-1, 2), me.y, me.mapData);
                         simulator.simulate();
                         if (simulator.pathFrames.size() > 1) {
                             this.moveLocation(simulator.pathFrames.get(simulator.pathFrames.size() - 1)[0], simulator.pathFrames.get(simulator.pathFrames.size() - 1)[1]);
                         }
                         //Tìm đối thủ
                         for (Player player : super.roomWait.mapData.players) {
-                            if (player != null && !player.isDie) {
-                                if (super.roomWait.mapData.isFightBoss) {
-                                    if (player.isBoss) {
-                                        this.selecteds.add(player);
-                                    }
-                                } else {
-                                    if (me.team != player.team) {
-                                        this.selecteds.add(player);
-                                    }
-                                }
-                            }
+                            if (isTarget(me, player)) this.selecteds.add(player);
                         }
                     }
                     if (!this.selecteds.isEmpty()) {
-                        Player player = this.selecteds.remove(Util.nextInt(this.selecteds.size()));
+                        Player player = takeTarget(this.selecteds, effectiveTargetMode());
                         if (me.glassID == 3 || me.glassID == 2) {
                             me.trajectory = new BulletTrajectory(
                                     super.roomWait.mapData, 
@@ -155,29 +155,63 @@ public class Bot extends User {
         if (System.currentTimeMillis() > this.waitInvited) {
             this.waitInvited = System.currentTimeMillis()+ Util.nextInt(3000);
             if (this.invited != null) {
-                super.joinRoomWait((byte)this.invited[0], (byte)this.invited[1], (String) this.invited[2]);
+                if (roomWait == null)
+                    joinRoomWait((byte)this.invited[0], (byte)this.invited[1], (String) this.invited[2]);
                 this.invited = null;
             }
         }
         //Tìm phòng ngẫu nhiên người chơi
         if (System.currentTimeMillis() > this.waitJoinAnyBoard) {
             this.waitJoinAnyBoard = System.currentTimeMillis() + Util.nextInt(3000, 600000);
-            if (super.roomWait == null) {
-//                this.joinRandom();
-            }
-        }
-        //Xóa bot
-        if (this.remove) {
-            this.remove();
+            if (super.roomWait == null && SETTINGS.autoJoin()) this.joinRandom();
         }
     }
     
+    void observeRoom(long now) {
+        boolean started = roomWait != null && roomWait.started;
+        if (observedRoom != roomWait || observedStarted != started) {
+            observedRoom = roomWait;
+            observedStarted = started;
+            waitReady = now + SETTINGS.readyDelayMs();
+            waitLeave = now + SETTINGS.leaveDelayMs();
+            selecteds.clear();
+            observedMap = null;
+            observedTurn = -1;
+            isLand = true;
+            if (roomWait != null) invited = null;
+        }
+    }
+
+    static boolean hasConnectedHuman(RoomWait room) {
+        for (User player : room.players) {
+            if (player != null && !(player instanceof Bot)
+                    && player.session != null && player.session.connected) return true;
+        }
+        return false;
+    }
+
+    static boolean isTarget(Player me, Player target) {
+        return me != null && target != null && target != me && !target.isDie && target.hp > 0
+                && (me.mapData.isFightBoss ? target.isBoss : me.team != target.team);
+    }
+
+    static Player takeTarget(ArrayList<Player> targets, BotSettings.TargetMode mode) {
+        int index = Util.nextInt(targets.size());
+        if (mode == BotSettings.TargetMode.LOW_HP) {
+            for (int i = 0; i < targets.size(); i++) {
+                if (targets.get(i).hp < targets.get(index).hp) index = i;
+            }
+        }
+        return targets.remove(index);
+    }
+
     private void joinRandom() {
         
         ArrayList<RoomWait> roomWaits = new ArrayList<>();
         for (RoomInfo entry : RoomInfo.entrys) {
             for (RoomWait wait : entry.roomWaits) {
-                if (!wait.started && wait.pass.isEmpty() && wait.money <= this.xu && wait.playerLimit > wait.numPlayer && wait.numPlayer <= 7 && wait.type == 0) {
+                if (!wait.started && wait.pass.isEmpty() && wait.money <= this.xu && wait.playerLimit > wait.numPlayer && wait.numPlayer <= 7 && wait.type == 0
+                        && (!SETTINGS.requireHuman() || hasConnectedHuman(wait))) {
                     roomWaits.add(wait);
                 }
             }
@@ -189,8 +223,15 @@ public class Bot extends User {
     }
     
     public void remove() {
+        this.remove = true;
         super.leaveRoomWait();
-        bots.add(this);
+        invited = null;
+        selecteds.clear();
+        observedRoom = null;
+        observedMap = null;
+        bots.remove(this);
+        bot_id.remove(id, this);
+        bot_name.remove(name, this);
     }
     
     public static int baseID = Integer.MIN_VALUE;
@@ -245,9 +286,10 @@ public class Bot extends User {
         for (int i = 0; i < 100; i++) {
             bot.addLinhTinh(Util.nextT(10, 40, 10, 30, 40) + Util.nextInt(7, 9), 1);
         }
-        int [] old = bot.glass().createAbility();
         for (Equip equip : bot.equips) {
-            while (equip.slot() > 0) {
+            // Bound attempts: a failed combine must not stall the game loop/admin command.
+            for (int attempts = 0; equip.slot() > 0 && attempts < 32; attempts++) {
+                int slotsBefore = equip.slot();
                 kt: {
                     for (LinhTinh linhtinh : bot.linhtinhs) {
                         if (linhtinh.id < 50) {
@@ -261,10 +303,10 @@ public class Bot extends User {
                     }
                     break;
                 }
+                if (equip.slot() >= slotsBefore) break;
             }
         }
         bot.glass().updateAll();
-        int pre[] = bot.glass().createAbility();
         add(bot);
         return bot;
     }
@@ -275,6 +317,8 @@ public class Bot extends User {
     }
     
     public static void add(Bot bot) {
+        if (bot.remove || bot_id.containsKey(bot.id))
+            throw new IllegalArgumentException("Bot đã bị xóa hoặc trùng ID: " + bot.id);
         bots.add(bot);
         bot_id.put(bot.id, bot);
         bot_name.put(bot.name, bot);
@@ -287,14 +331,14 @@ public class Bot extends User {
     public static void updateBot() {
         for (int i = bots.size() - 1; i >= 0; i--) {
             Bot bot = bots.get(i);
-            if (!bot.lock) {
+            if (bot.remove || !bot.lock) {
                 bot.update();
             }
         }
     }
     
     public static void generateBot() {
-        for (int i = 0; i < 5000; i++) {
+        for (int i = bots.size(); i < SETTINGS.count(); i++) {
             Bot.addBot(null, Util.nextInt(10), Util.nextInt(50000000), null);
 //            Bot.addBot(null, Util.nextInt(10), Util.nextInt(100), null);
         }

@@ -30,7 +30,7 @@ Script sau tự build JAR, tạo hoặc khởi động MySQL, đợi import dữ
 ./run-manual.sh
 ```
 
-Đổi tài khoản admin:
+Chọn tài khoản OWNER cho lần khởi tạo database đầu tiên:
 
 ```bash
 ADMIN_USERNAME=myadmin \
@@ -103,7 +103,7 @@ Kết quả đúng:
 
 ```text
 mysqld is alive
-25
+26
 ```
 
 Nếu MySQL chưa sẵn sàng, xem quá trình import bằng:
@@ -247,8 +247,48 @@ Web admin hiện hỗ trợ:
 - Ban vĩnh viễn hoặc theo số phút và unban.
 - Wallet transaction và audit log có lý do bắt buộc, request ID, dữ liệu trước/sau.
 
-Database tự tạo thêm các bảng `user_ban`, `wallet_transaction`, `admin_audit_log` và
-`user_account_state` khi admin khởi động. Khi nâng cấp từ bản cũ, server tự thêm các cột
+Các chức năng quản trị bổ sung:
+
+- **Bộ lọc người chơi:** online, offline, bị ban, khóa đăng nhập, xóa mềm; mỗi trang 25 người. Có thể kết hợp tìm tên/ID với bộ lọc.
+- **Chỉ số nhân vật:** nhập riêng HP, sức mạnh, phòng thủ, may mắn, đồng đội trong tab Nhân vật; không cần nhập mảng JSON. Chỉ số được áp dụng cho trận tiếp theo.
+- **Kho đồ:** tìm vật phẩm và trang bị theo tên/ID, hỗ trợ tìm tiếng Việt không dấu. Item có ảnh xem trước nếu có ảnh trong `res/icon/item`; đồ đặc biệt hiển thị mô tả.
+- **Phòng và trận** (`/admin/rooms`): xem map, thành viên, đội, HP, lượt hiện tại và thời lượng. Game loop xuất snapshot khoảng mỗi giây; bấm Làm mới để lấy dữ liệu mới. Trang này chỉ xem.
+- **Thông báo** (`/admin/broadcast`): gửi một dòng tối đa 300 ký tự tới các phiên người chơi đang online; bắt buộc lý do và ghi audit. Số phiên báo thành công là số phiên được đưa vào hàng đợi gửi, không phải xác nhận từ client; người offline không nhận lại.
+- **Tài khoản admin** (`/admin/accounts`): OWNER tạo tài khoản, đổi quyền, bật/tắt và reset mật khẩu. Mật khẩu được băm BCrypt; tối thiểu 8 ký tự, tối đa 72 byte UTF-8. Mọi lần cập nhật tài khoản thu hồi các phiên đăng nhập cũ. Không cho vô hiệu hóa hoặc hạ quyền OWNER cuối cùng.
+
+| Quyền | Phạm vi |
+| --- | --- |
+| OWNER | Tất cả chức năng và quản lý tài khoản admin |
+| ADMIN | Quản lý người chơi, bot, chỉ số, kho đồ, số dư và gửi thông báo |
+| MODERATOR | Xem, kick, ban/unban, khóa/mở khóa; không khôi phục người chơi đã xóa mềm |
+| VIEWER | Chỉ xem, không thay đổi dữ liệu |
+
+**Nâng cấp database đang dùng:** dừng tiến trình Java cũ, build lại rồi chạy bằng
+`bash run-manual.sh` như trước. Server tự tạo bảng `admin_account` nếu chưa có;
+không cần import lại `army.sql` vào database đang có dữ liệu.
+`ADMIN_USERNAME` và `ADMIN_PASSWORD` chỉ tạo OWNER khi bảng admin còn trống.
+Sau lần đầu, đổi mật khẩu/quyền trong trang Tài khoản admin; thay biến môi trường
+không ghi đè tài khoản đã lưu. Vẫn cấu hình `ADMIN_PASSWORD` khi bật web admin.
+
+Kiểm thử trên stack Docker và database tạm riêng:
+
+```bash
+bash tests/admin-priority.sh
+# Nếu cổng kiểm thử đang bận:
+TEST_ADMIN_PORT=18081 TEST_GAME_PORT=18123 bash tests/admin-priority.sh
+```
+
+Bộ test hiện gồm 156 kiểm tra HTTP/SQL, 11 kiểm tra snapshot phòng/trận và 7 kiểm tra
+bootstrap/broadcast. Kiểm thử Chrome thêm tìm kiếm catalog, ảnh preview và bố cục
+1440/390/320 px. Phòng/trận và gói broadcast có fixture/session mô phỏng;
+vẫn cần nghiệm thu hiển thị trong trận bằng hai client game thật.
+
+Script cần JDK 21, Docker Compose hỗ trợ `!override`, Python 3 và Docker daemon đang chạy.
+Thêm `TEST_BROWSER=1` để kiểm tra trên Chrome/Chromium headless nếu đã cài trình duyệt.
+Nó tự build, kiểm tra HTTP/CSRF/phân quyền/dữ liệu, rồi xóa **chỉ volume của stack kiểm thử**.
+
+Database tự tạo thêm các bảng `user_ban`, `wallet_transaction`, `admin_audit_log`,
+`user_account_state` và `admin_account` khi admin khởi động. Khi nâng cấp từ bản cũ, server tự thêm các cột
 `reason`, `before_data`, `after_data` và `request_id` còn thiếu trong `admin_audit_log`.
 File `army.sql` cũng đã chứa đầy đủ schema này cho database khởi tạo mới.
 
@@ -354,3 +394,61 @@ Client kết nối tới IP của máy chạy server, port mặc định `8122`.
 ### Server đang hoạt động
 
 ![Server đang hoạt động](src/anh4.png)
+
+### Cấu hình bot
+
+Bot đọc cấu hình lúc khởi động. Không cần ALTER hoặc import lại database.
+
+| Biến | Mặc định | Ý nghĩa |
+| --- | --- | --- |
+| `BOT_COUNT` | `5000` | Số bot được tạo; 0–10000, `0` không tạo bot |
+| `BOT_AUTO_JOIN` | `false` | Tự thử vào phòng sơ cấp công khai, còn chỗ và đủ tiền cược |
+| `BOT_REQUIRE_HUMAN` | `true` | Bot chủ phòng chỉ thử start khi có người thật còn kết nối; tự tìm phòng cũng áp dụng điều kiện này |
+| `BOT_READY_DELAY_MS` | `2000` | Thời gian trước lần sẵn sàng đầu tiên và giữa các lần kiểm tra; 100–60000 ms |
+| `BOT_LEAVE_DELAY_MS` | `120000` | Thời gian chờ tối đa sau khi vào phòng hoặc kết thúc trận; 1000–3600000 ms; không rời giữa trận |
+| `BOT_TARGET_MODE` | `RANDOM` | `RANDOM`: chọn ngẫu nhiên; `LOW_HP`: ưu tiên đối thủ có HP tuyệt đối thấp nhất |
+
+Ví dụ chạy 100 bot và ưu tiên đối thủ ít HP:
+
+```bash
+BOT_COUNT=100 BOT_TARGET_MODE=LOW_HP bash run-manual.sh
+```
+
+Với Docker Compose:
+
+```bash
+BOT_COUNT=100 BOT_TARGET_MODE=LOW_HP docker compose up -d --build
+```
+
+Muốn bot tự tìm phòng, thêm `BOT_AUTO_JOIN=true`. Chu kỳ tìm phòng ngẫu nhiên 3 giây
+đến dưới 10 phút, nên không phải bật là bot vào ngay. Muốn cho phép bot chủ phòng
+mở trận chỉ có bot, đặt `BOT_REQUIRE_HUMAN=false`; vẫn phải thỏa điều kiện của phòng.
+Cấu hình sai sẽ báo lỗi khi khởi tạo bot. Những biến môi trường này chưa chỉnh trực tiếp trên web admin; trang Bot cho phép quản lý từng bot đang chạy.
+
+Phân tích chi tiết và lộ trình: [docs/bot-improvements.md](docs/bot-improvements.md).
+Kiểm tra logic bot: `bash tests/bot-behavior.sh` (40 kiểm tra hành vi và 15 kiểm tra quản trị bot, cần JDK 21).
+
+### Quản lý bot trên web
+
+Mở **Quản lý bot** ở thanh bên hoặc `/admin/bots`.
+
+- Xem số bot nhàn rỗi, chờ phòng và đang chơi; tìm theo tên/ID âm, lọc trạng thái, phân trang 25 bot.
+- Xem nhân vật, cấp độ, phòng/bàn, trạng thái xử lý và chế độ chọn mục tiêu.
+- OWNER/ADMIN tạo từng bot bằng tên, nhân vật ID 0–9 và EXP; trang bị được chọn theo cấp như bot khởi tạo tự động. Tổng tối đa 10.000 bot.
+- Chọn `Đổi cách chọn mục tiêu` để áp dụng RANDOM, LOW_HP hoặc quay về cấu hình mặc định. Có hiệu lực ở lần chọn mục tiêu tiếp theo, không tính lại đường đạn đã bắt đầu mô phỏng.
+- Chọn `Rời phòng chờ` hoặc `Xóa bot`. Server từ chối nếu bot đã vào trận hoặc đang khóa xử lý, kể cả trạng thái thay đổi sau khi gửi lệnh. Bot rời phòng vẫn có thể nhận lời mời/tự tìm phòng lại.
+- MODERATOR/VIEWER chỉ xem. Thao tác yêu cầu CSRF và lý do, kiểm tra lại quyền admin khi xử lý.
+
+Sau khi gửi, xem **Lệnh gần đây** và bấm **Làm mới**. `QUEUED` là chờ, `RUNNING`
+là đang xử lý, `DONE` là hoàn tất, `FAILED` là bị từ chối hoặc lỗi. Không xem thông báo
+“Đã nhận lệnh” là đã hoàn thành. Nếu `DONE_AUDIT_ERROR`, thay đổi đã thực hiện nhưng ghi
+audit kết quả lỗi: kiểm tra log, không gửi lại thao tác.
+
+Lệnh được xử lý tuần tự trên game loop (tối đa một lệnh mỗi tick), hàng đợi tối đa 32.
+Lệnh còn chờ quá 10 giây bị từ chối khi được lấy ra. Ghi audit `BOT_REQUEST` trước khi
+sửa dữ liệu RAM và `BOT_RESULT` sau thành công; lỗi ghi audit yêu cầu thì không thực hiện.
+Tra mã lệnh trong lịch sử quản trị. 100 kết quả lệnh gần nhất nằm trong bộ nhớ.
+
+**Không cần sửa schema DB.** Bot và chế độ riêng không lưu bền: restart tạo lại bot theo
+BOT_COUNT; bot đã xóa không làm giảm BOT_COUNT. Audit vẫn nằm trong database. Cấu hình
+tổng số lượng, tự tìm phòng và thời gian chờ vẫn dùng biến môi trường.

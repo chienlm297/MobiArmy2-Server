@@ -37,6 +37,7 @@ public class MapData {
     public ArrayList<Tornado> tornados;
     public Player[] players;
     public long timeWait;
+    public long startedAt;
     public int windX;
     public int windY;
     public int nTurn;
@@ -94,6 +95,7 @@ public class MapData {
     }
     
     public void startGame(User[] users) {
+        this.startedAt = System.currentTimeMillis();
         this.roomWait.started = true;
         this.isWar = true;
         //Đặt vị trí của người chơi

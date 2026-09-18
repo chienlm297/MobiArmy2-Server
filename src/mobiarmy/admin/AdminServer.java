@@ -26,14 +26,10 @@ public final class AdminServer {
             "overview", "characters", "equipment", "inventory", "missions", "friends", "history");
 
     private final HttpServer server;
-    private final String adminUsername;
-    private final String adminPassword;
     private final ConcurrentHashMap<String, AdminSession> sessions = new ConcurrentHashMap<>();
 
-    private AdminServer(String host, int port, String adminUsername, String adminPassword)
+    private AdminServer(String host, int port)
             throws IOException {
-        this.adminUsername = adminUsername;
-        this.adminPassword = adminPassword;
         this.server = HttpServer.create(new InetSocketAddress(host, port), 0);
         this.server.createContext("/", this::handle);
         this.server.setExecutor(Executors.newFixedThreadPool(4, runnable -> {
@@ -43,7 +39,7 @@ public final class AdminServer {
         }));
     }
 
-    public static AdminServer startIfEnabled() throws IOException {
+    public static AdminServer startIfEnabled() throws IOException, SQLException {
         if (!Boolean.parseBoolean(env("ADMIN_ENABLED", "false"))) {
             return null;
         }
@@ -51,10 +47,10 @@ public final class AdminServer {
         if (password.isBlank()) {
             throw new IllegalStateException("ADMIN_PASSWORD is required when ADMIN_ENABLED=true");
         }
+        AdminAccounts.initialize(env("ADMIN_USERNAME", "admin"), password);
         String host = env("ADMIN_HOST", "127.0.0.1");
         int port = Integer.parseInt(env("ADMIN_PORT", "8080"));
-        AdminServer adminServer = new AdminServer(
-                host, port, env("ADMIN_USERNAME", "admin"), password);
+        AdminServer adminServer = new AdminServer(host, port);
         adminServer.server.start();
         System.out.println("Web admin: http://" + host + ":" + port);
         return adminServer;
@@ -88,6 +84,53 @@ public final class AdminServer {
                 return;
             }
 
+            AdminView.setRole(session.account().role());
+            if (("POST".equals(method) || path.equals("/admin/accounts") || path.equals("/admin/users/new"))
+                    && !session.account().role().allows(path)) {
+                throw new SecurityException("Tài khoản không có quyền thực hiện thao tác này");
+            }
+            if ("GET".equals(method) && (path.equals("/admin/assets/admin.js") || path.matches("/admin/icons/[0-9]+\\.png"))) {
+                asset(exchange, path);
+                return;
+            }
+            if ("/admin/bots".equals(path)) {
+                if ("POST".equals(method)) {
+                    Map<String,String> form = readForm(exchange);
+                    requireCsrf(session, form);
+                    String id = AdminBots.submit(session.account(), form);
+                    redirect(exchange, "/admin/bots?message=" + AdminView.url("Đã nhận lệnh " + id + ". Xem kết quả trong Lệnh gần đây; bấm Làm mới."));
+                } else if ("GET".equals(method)) {
+                    sendHtml(exchange, 200, AdminView.bots(AdminBots.snapshot(), AdminBots.jobs(),
+                            parseQuery(exchange.getRequestURI()), session.csrf(), session.username()));
+                } else methodNotAllowed(exchange);
+                return;
+            }
+            if ("/admin/accounts".equals(path)) {
+                if ("POST".equals(method)) {
+                    Map<String,String> form = readForm(exchange);
+                    requireCsrf(session, form);
+                    AdminAccounts.save(session.account(), form);
+                    redirect(exchange, "/admin/accounts?message=" + AdminView.url("Đã lưu tài khoản; các phiên cũ của tài khoản đã bị thu hồi"));
+                } else if ("GET".equals(method)) {
+                    sendHtml(exchange, 200, AdminView.accounts(AdminAccounts.list(), session.csrf(), session.username(), parseQuery(exchange.getRequestURI()).get("message")));
+                } else methodNotAllowed(exchange);
+                return;
+            }
+            if ("/admin/rooms".equals(path) && "GET".equals(method)) {
+                sendHtml(exchange, 200, AdminView.rooms(AdminOperations.rooms(), parseQuery(exchange.getRequestURI()).getOrDefault("state", "ACTIVE"), session.csrf(), session.username()));
+                return;
+            }
+            if ("/admin/broadcast".equals(path)) {
+                if ("POST".equals(method)) {
+                    Map<String,String> form = readForm(exchange);
+                    requireCsrf(session, form);
+                    int count = AdminOperations.broadcast(form.get("text"), form.get("reason"), session.username());
+                    redirect(exchange, "/admin/broadcast?message=" + AdminView.url("Đã đưa thông báo vào hàng đợi gửi của " + count + " phiên online"));
+                } else if ("GET".equals(method)) {
+                    sendHtml(exchange, 200, AdminView.broadcast(session.csrf(), session.username(), parseQuery(exchange.getRequestURI()).get("message")));
+                } else methodNotAllowed(exchange);
+                return;
+            }
             if ("/logout".equals(path) && "POST".equals(method)) {
                 logout(exchange, session);
                 return;
@@ -116,6 +159,9 @@ public final class AdminServer {
 
             sendHtml(exchange, 404,
                     AdminView.error("Không tìm thấy", "Đường dẫn không tồn tại.", true, session.csrf()));
+        } catch (SecurityException exception) {
+            sendHtml(exchange, 403, AdminView.error("Không đủ quyền", exception.getMessage(),
+                    session != null, session == null ? null : session.csrf()));
         } catch (IllegalArgumentException exception) {
             sendHtml(exchange, 400, AdminView.error("Dữ liệu không hợp lệ",
                     exception.getMessage(), session != null, session == null ? null : session.csrf()));
@@ -125,19 +171,20 @@ public final class AdminServer {
                     "Xem log server để biết chi tiết.", session != null,
                     session == null ? null : session.csrf()));
         } finally {
+            AdminView.clearRole();
             exchange.close();
         }
     }
 
-    private void login(HttpExchange exchange) throws IOException {
+    private void login(HttpExchange exchange) throws IOException, SQLException {
         Map<String, String> form = readForm(exchange);
-        if (!secureEquals(adminUsername, form.get("username"))
-                || !secureEquals(adminPassword, form.get("password"))) {
+        AdminAccounts.Account account = AdminAccounts.login(form.get("username"), form.get("password"));
+        if (account == null) {
             sendHtml(exchange, 401, AdminView.login("Sai tài khoản hoặc mật khẩu"));
             return;
         }
         String token = UUID.randomUUID().toString();
-        AdminSession session = new AdminSession(token, adminUsername, UUID.randomUUID().toString(),
+        AdminSession session = new AdminSession(token, account, UUID.randomUUID().toString(),
                 System.currentTimeMillis() + SESSION_TTL_MILLIS);
         sessions.put(token, session);
         exchange.getResponseHeaders().add("Set-Cookie",
@@ -158,7 +205,8 @@ public final class AdminServer {
         Map<String, String> query = parseQuery(exchange.getRequestURI());
         String search = query.getOrDefault("q", "");
         sendHtml(exchange, 200, AdminView.dashboard(
-                AdminService.dashboard(), AdminService.findUsers(search), AdminService.recentAudit(),
+                AdminService.dashboard(), AdminService.searchUsers(search, query.getOrDefault("filter", "ALL"),
+                        Integer.parseInt(query.getOrDefault("page", "1"))), AdminService.recentAudit(),
                 search, query.get("message"), session.csrf(), session.username()));
     }
 
@@ -177,7 +225,7 @@ public final class AdminServer {
             return;
         }
         sendHtml(exchange, 200, AdminView.userDetail(detail, tab, query.get("message"),
-                session.csrf(), session.username()));
+                session.csrf(), session.username(), AdminOperations.catalog()));
     }
 
     private void createUser(HttpExchange exchange, AdminSession session)
@@ -244,12 +292,12 @@ public final class AdminServer {
             }
             case "lock" -> {
                 PlayerAdminService.changeAccountState(userId, "LOCKED", form.get("reason"),
-                        session.username());
+                        session.username(), session.account().role() != AdminAccounts.Role.MODERATOR);
                 message = "Đã khóa đăng nhập user " + userId;
             }
             case "unlock", "restore" -> {
                 PlayerAdminService.changeAccountState(userId, "ACTIVE", form.get("reason"),
-                        session.username());
+                        session.username(), session.account().role() != AdminAccounts.Role.MODERATOR);
                 message = "Đã mở khóa/khôi phục user " + userId;
             }
             case "delete" -> {
@@ -273,15 +321,18 @@ public final class AdminServer {
                 int exp = Integer.parseInt(form.getOrDefault("exp", "-1"));
                 int point = Integer.parseInt(form.getOrDefault("point", "-1"));
                 PlayerAdminService.CharacterChange result = PlayerAdminService.updateCharacter(
-                        userId, glassId, exp, point, form.get("ability"), form.get("reason"),
+                        userId, glassId, exp, point, abilityForm(form), form.get("reason"),
                         session.username());
                 message = "Đã cập nhật nhân vật #" + glassId + " lên cấp " + result.level();
             }
             case "inventory" -> {
-                int itemId = Integer.parseInt(form.getOrDefault("item_id", "-1"));
+                String[] item = form.getOrDefault("item_key", "").split(":", 2);
+                if (item.length != 2 || !Set.of("ITEM", "SPECIAL").contains(item[0]))
+                    throw new IllegalArgumentException("Chọn vật phẩm từ danh mục");
+                int itemId = Integer.parseInt(item[1]);
                 long amount = Long.parseLong(form.getOrDefault("amount", "0"));
                 PlayerAdminService.ValueChange result = PlayerAdminService.adjustInventory(
-                        userId, form.get("kind"), itemId, amount, form.get("reason"),
+                        userId, item[0], itemId, amount, form.get("reason"),
                         session.username());
                 message = "Đã cập nhật vật phẩm #" + itemId + ": "
                         + result.before() + " → " + result.after();
@@ -328,7 +379,7 @@ public final class AdminServer {
         return "/admin";
     }
 
-    private AdminSession authenticate(HttpExchange exchange) {
+    private AdminSession authenticate(HttpExchange exchange) throws SQLException {
         String token = cookie(exchange, SESSION_COOKIE);
         if (token == null) {
             return null;
@@ -338,7 +389,36 @@ public final class AdminServer {
             sessions.remove(token);
             return null;
         }
+        AdminAccounts.Account account = AdminAccounts.get(session.account().id());
+        if (account == null || !account.enabled() || account.version() != session.account().version()) {
+            sessions.remove(token);
+            return null;
+        }
         return session;
+    }
+
+    static String abilityForm(Map<String,String> form) {
+        int[] values = new int[5];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = Integer.parseInt(form.getOrDefault("ability_" + i, "-1"));
+            if (values[i] < 0 || values[i] > 100000) throw new IllegalArgumentException("Chỉ số phải từ 0 đến 100.000");
+        }
+        return new com.google.gson.Gson().toJson(values);
+    }
+
+    private static void asset(HttpExchange exchange, String path) throws IOException {
+        boolean script = path.equals("/admin/assets/admin.js");
+        java.nio.file.Path file = script ? java.nio.file.Path.of("res/admin/admin.js")
+                : java.nio.file.Path.of("res/icon/item", path.substring(path.lastIndexOf('/') + 1));
+        if (!java.nio.file.Files.isRegularFile(file)) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+        byte[] data = java.nio.file.Files.readAllBytes(file);
+        exchange.getResponseHeaders().set("Content-Type", script ? "application/javascript; charset=utf-8" : "image/png");
+        exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
+        exchange.sendResponseHeaders(200, data.length);
+        exchange.getResponseBody().write(data);
     }
 
     private static void requireCsrf(AdminSession session, Map<String, String> form) {
@@ -397,7 +477,7 @@ public final class AdminServer {
         exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
         exchange.getResponseHeaders().set("X-Frame-Options", "DENY");
         exchange.getResponseHeaders().set("Content-Security-Policy",
-                "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
+                "default-src 'none'; script-src 'self'; img-src 'self'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
         exchange.sendResponseHeaders(status, bytes.length);
         exchange.getResponseBody().write(bytes);
     }
@@ -425,6 +505,7 @@ public final class AdminServer {
         return value == null || value.isBlank() ? defaultValue : value;
     }
 
-    private record AdminSession(String token, String username, String csrf, long expiresAt) {
+    private record AdminSession(String token, AdminAccounts.Account account, String csrf, long expiresAt) {
+        String username() { return account.username(); }
     }
 }
