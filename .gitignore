@@ -1,0 +1,46 @@
+# Java / Ant build output
+/build/
+/dist/
+*.class
+hs_err_pid*
+replay_pid*
+*.hprof
+
+# Local database backups (keep army.sql in version control)
+/backups/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Runtime logs and process files
+/logs/
+*.log
+*.pid
+
+# IDE settings specific to this machine
+/nbproject/private/
+/.idea/
+/.vscode/
+*.iml
+
+# Python test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Local agent workspace
+/.agents/
+/.codex/
+
+# lib/, res/ and cache/ contain runtime dependencies/assets; do not ignore them.
