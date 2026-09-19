@@ -17,6 +17,12 @@ import mobiarmy.war.RoomWait;
 public class Bot extends User {
     
     public boolean remove = false;
+    public BotPolicy policyOverride;
+    public BotPolicy effectivePolicy() { return policyOverride == null ? BotPolicy.defaults() : policyOverride; }
+    public String lastDecision = "Chưa có lượt";
+    public long decisions, moves, usedItems, searchNanos, searchCalls, timeouts, skippedTurns;
+    public void decision(String reason) { lastDecision = reason; decisions++; }
+
     // Modified by the game loop; null follows startup configuration.
     public BotSettings.TargetMode targetModeOverride;
     public BotSettings.TargetMode effectiveTargetMode() {
@@ -28,6 +34,17 @@ public class Bot extends User {
     public long waitReady;
     public long waitLeave;
     private boolean isLand = true;
+    private Player legacyAimTarget;
+    private int legacyTargetX, legacyTargetY, legacyOriginX, legacyOriginY;
+    boolean legacyAimValid(Player me) {
+        return me != null && isTarget(me, legacyAimTarget)
+                && java.util.Arrays.asList(me.mapData.players).contains(legacyAimTarget)
+                && legacyAimTarget.x == legacyTargetX && legacyAimTarget.y == legacyTargetY
+                && me.x == legacyOriginX && me.y == legacyOriginY;
+    }
+
+    private BotTurnController turnController;
+    static final boolean TACTICAL = Boolean.parseBoolean(System.getenv().getOrDefault("BOT_TACTICAL", "false"));
     static final BotSettings SETTINGS = BotSettings.fromEnvironment(System.getenv());
     private RoomWait observedRoom;
     private boolean observedStarted;
@@ -62,6 +79,11 @@ public class Bot extends User {
                 }
             }
         }
+        if (effectivePolicy().enabled() || turnController != null && turnController.active()) {
+            selecteds.clear();
+            if (turnController == null) turnController = new BotTurnController();
+            turnController.update(this, now);
+        } else {
         //Nếu trong trận và đến lượt
         if (super.roomWait != null && super.roomWait.started && super.roomWait.mapData != null
                 && super.index >= 0 && super.index < super.roomWait.mapData.players.length
@@ -72,10 +94,18 @@ public class Bot extends User {
                 isLand = true;
                 observedMap = roomWait.mapData;
                 observedTurn = observedMap.nTurn;
+                legacyAimTarget = null;
+                if (me != null) me.trajectory = null;
             }
             selecteds.removeIf(target -> !isTarget(me, target)
                     || !java.util.Arrays.asList(roomWait.mapData.players).contains(target));
             if (me != null && !me.isDie && !me.isShoot && System.currentTimeMillis() > me.mapData.timeUntilAction2) {
+                // The cached solution may outlive its target. Never fire at a corpse or old position.
+                if (me.trajectory != null && !legacyAimValid(me)) {
+                    me.trajectory = null; legacyAimTarget = null;
+                    decision("Hủy góc bắn: mục tiêu chết/rời trận/đổi vị trí");
+                    return;
+                }
                 //Dùng item
                 if (!me.isUseItem) {
                     //Kĩ năng đặc biệt
@@ -101,6 +131,8 @@ public class Bot extends User {
                     }
                     if (!this.selecteds.isEmpty()) {
                         Player player = takeTarget(this.selecteds, effectiveTargetMode());
+                        legacyAimTarget = player; legacyTargetX = player.x; legacyTargetY = player.y;
+                        legacyOriginX = me.x; legacyOriginY = me.y;
                         if (me.glassID == 3 || me.glassID == 2) {
                             me.trajectory = new BulletTrajectory(
                                     super.roomWait.mapData, 
@@ -151,6 +183,7 @@ public class Bot extends User {
                 }
             }
         }
+        }
         //Mời vào phòng chờ
         if (System.currentTimeMillis() > this.waitInvited) {
             this.waitInvited = System.currentTimeMillis()+ Util.nextInt(3000);
@@ -192,6 +225,7 @@ public class Bot extends User {
 
     static boolean isTarget(Player me, Player target) {
         return me != null && target != null && target != me && !target.isDie && target.hp > 0
+                && target.countInvisible == 0 && target.countInvisible2 == 0
                 && (me.mapData.isFightBoss ? target.isBoss : me.team != target.team);
     }
 
@@ -224,6 +258,7 @@ public class Bot extends User {
     
     public void remove() {
         this.remove = true;
+        if (turnController != null) turnController.reset();
         super.leaveRoomWait();
         invited = null;
         selecteds.clear();
@@ -328,15 +363,21 @@ public class Bot extends User {
     public static HashMap<Integer, Bot> bot_id = new HashMap<>();
     public static HashMap<String, Bot> bot_name = new HashMap<>();
     
+    private static int updateOffset;
     public static void updateBot() {
-        for (int i = bots.size() - 1; i >= 0; i--) {
-            Bot bot = bots.get(i);
-            if (bot.remove || !bot.lock) {
-                bot.update();
-            }
+        BotTurnController.beginTick();
+        Bot[] snapshot = bots.toArray(new Bot[0]);
+        if (snapshot.length == 0) return;
+        int start = Math.floorMod(updateOffset++, snapshot.length);
+        for (int i = 0; i < snapshot.length; i++) {
+            Bot bot = snapshot[(start + i) % snapshot.length];
+            boolean exhausted = BotTurnController.budgetExhausted();
+            if (bot.remove || !bot.lock) bot.update();
+            else if (bot.turnController != null) bot.turnController.reset();
+            if (!exhausted && BotTurnController.budgetExhausted()) updateOffset = (start + i + 1) % snapshot.length;
         }
     }
-    
+
     public static void generateBot() {
         for (int i = bots.size(); i < SETTINGS.count(); i++) {
             Bot.addBot(null, Util.nextInt(10), Util.nextInt(50000000), null);

@@ -1,0 +1,4 @@
+PASS: 1000 deterministic simulated turns seed=20260919 checks=1512143 shots=833 moveSegments=962 items=594
+Exception in thread "main" java.lang.AssertionError: wind item skipped after reaching walking destination
+	at mobiarmy.server.BotSoakTest.require(BotSoakTest.java:9)
+	at mobiarmy.server.BotSoakTest.main(BotSoakTest.java:48)

@@ -17,7 +17,7 @@ public class ItemTeleportBullet extends Bullet {
     @Override
     public void nextXY() {
         super.nextXY();
-        if (super.collect && super.gun.mapData.isCollisionMap(super.bX, super.bY)) {
+        if (!super.gun.test && super.collect && super.gun.mapData.isCollisionMap(super.bX, super.bY)) {
             super.gun.mapData.players[super.gun.index].x = (short) super.bX;
             super.gun.mapData.players[super.gun.index].y = (short) super.bY;
         }

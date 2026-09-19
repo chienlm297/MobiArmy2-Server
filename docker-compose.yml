@@ -29,6 +29,7 @@ services:
     environment:
       MOBIARMY_HEADLESS: "true"
       MOBIARMY_PORT: "8122"
+      BOT_TACTICAL: ${BOT_TACTICAL:-false}
       BOT_COUNT: ${BOT_COUNT:-5000}
       BOT_AUTO_JOIN: ${BOT_AUTO_JOIN:-false}
       BOT_REQUIRE_HUMAN: ${BOT_REQUIRE_HUMAN:-true}

@@ -1,0 +1,3 @@
+Fixture bot IDs: -2147483648,-2147483647
+  BcFixture  #-2147483648   #0 · Lv.1  Chưa vào phòng  —  RANDOM (mặc định) Chưa có lượt  Quyết định=0 · Đoạn đi=0 · Item=0 · Tìm góc=0 · ms=0 · Timeout=0 · Bỏ lượt=0  Slots: [5, 6, 10, 1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=30 6=30 10=30    
+  BcFixture2  #-2147483647   #0 · Lv.1  Chưa vào phòng  —  RANDOM (mặc định) Chưa có lượt  Quyết định=0 · Đoạn đi=0 · Item=0 · Tìm góc=0 · ms=0 · Timeout=0 · Bỏ lượt=0  Slots: [5, 6, 10, 1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=30 6=30 10=30    

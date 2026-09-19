@@ -1,0 +1,47 @@
+{"time":1789736782766,"type":"STATE","detail":"LOGIN"}
+{"time":1789736782806,"type":"LOGIN_REQUEST","detail":"sent"}
+{"time":1789736785401,"type":"LOGIN_CONFIRMED","detail":"id=7 xu=100000 luong=1011"}
+{"time":1789736785401,"type":"STATE","detail":"JOIN"}
+{"time":1789736786176,"type":"JOIN_REQUEST","detail":"0/0"}
+{"time":1789736786276,"type":"ROOM_METADATA","detail":"0/0"}
+{"time":1789736786476,"type":"STATE","detail":"PARTNER"}
+{"time":1789736786501,"type":"READY_REQUEST","detail":"sent"}
+{"time":1789736787376,"type":"STATE","detail":"START"}
+{"time":1789736793228,"type":"MATCH_START","detail":"1"}
+{"time":1789736793228,"type":"STATE","detail":"PLAY"}
+{"time":1789736793325,"type":"TURN","detail":"1:1"}
+{"time":1789736798779,"type":"SHOT_REQUEST","detail":"turn=1 angle=54 force=25"}
+{"time":1789736800055,"type":"TURN","detail":"0:2"}
+{"time":1789736803255,"type":"TURN","detail":"1:3"}
+{"time":1789736803836,"type":"SHOT_REQUEST","detail":"turn=3 angle=58 force=29"}
+{"time":1789736805587,"type":"MATCH_COMPLETE","detail":"1 server-confirmed"}
+{"time":1789736805587,"type":"WALLET","detail":"id=7 xu=100000 luong=1011"}
+{"time":1789736805587,"type":"STATE","detail":"RESULT"}
+{"time":1789736817587,"type":"STATE","detail":"PARTNER"}
+{"time":1789736817612,"type":"READY_REQUEST","detail":"sent"}
+{"time":1789736817662,"type":"BROADCAST","detail":"[Thông báo] autoplay-3a32a1678e674c109b1b0a9278d141bf-lobby"}
+{"time":1789736817762,"type":"STATE","detail":"START"}
+{"time":1789736824288,"type":"MATCH_START","detail":"2"}
+{"time":1789736824288,"type":"STATE","detail":"PLAY"}
+{"time":1789736824387,"type":"TURN","detail":"1:4"}
+{"time":1789736824687,"type":"BROADCAST","detail":"[Thông báo] autoplay-3a32a1678e674c109b1b0a9278d141bf-combat"}
+{"time":1789736829814,"type":"SHOT_REQUEST","detail":"turn=4 angle=66 force=17"}
+{"time":1789736832141,"type":"MATCH_COMPLETE","detail":"2 server-confirmed"}
+{"time":1789736832141,"type":"WALLET","detail":"id=7 xu=100000 luong=1022"}
+{"time":1789736832141,"type":"STATE","detail":"RESULT"}
+{"time":1789736844141,"type":"STATE","detail":"PARTNER"}
+{"time":1789736844166,"type":"READY_REQUEST","detail":"sent"}
+{"time":1789736844216,"type":"STATE","detail":"START"}
+{"time":1789736850767,"type":"MATCH_START","detail":"3"}
+{"time":1789736850767,"type":"STATE","detail":"PLAY"}
+{"time":1789736850866,"type":"TURN","detail":"0:5"}
+{"time":1789736858616,"type":"MATCH_COMPLETE","detail":"3 server-confirmed"}
+{"time":1789736858616,"type":"WALLET","detail":"id=7 xu=100000 luong=1022"}
+{"time":1789736858616,"type":"STATE","detail":"RESULT"}
+{"time":1789736870626,"type":"RELOGIN_BEGIN","detail":"id=7 xu=100000 luong=1022"}
+{"time":1789736870626,"type":"STATE","detail":"RELOGIN_WAIT"}
+{"time":1789736872616,"type":"STATE","detail":"RELOGIN"}
+{"time":1789736872642,"type":"LOGIN_REQUEST","detail":"sent"}
+{"time":1789736873116,"type":"LOGIN_CONFIRMED","detail":"id=7 xu=100000 luong=1022"}
+{"time":1789736873117,"type":"RELOGIN_CONFIRMED","detail":"Fresh server login received"}
+{"time":1789736873117,"type":"STATE","detail":"DONE"}

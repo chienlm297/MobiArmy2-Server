@@ -1,0 +1,2 @@
+  BcFixture  #-2147483648   #0 · Lv.1  Đang chơi  0 / 0  RANDOM (mặc định) Giữ vị trí  Quyết định=11625 · Đoạn đi=18 · Item=1 · Tìm góc=882955 · ms=52836 · Timeout=0  Slots: [6, -1, -1, -1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=0 6=29 10=0    
+  BcFixture2  #-2147483647   #0 · Lv.1  Đang chơi  0 / 0  RANDOM (mặc định) Không còn mục tiêu nhìn thấy  Quyết định=11626 · Đoạn đi=45 · Item=1 · Tìm góc=885760 · ms=57104 · Timeout=0  Slots: [6, -1, -1, -1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=0 6=29 10=0    

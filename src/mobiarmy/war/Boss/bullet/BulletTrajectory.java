@@ -24,7 +24,7 @@ public class BulletTrajectory extends Gun {
     private final int minAng;
     private final int force0;
     public boolean place;
-    public boolean complate;
+    public volatile boolean complate;
     public int fAdd = 1;
     public int aAdd = 1;
     
@@ -55,6 +55,52 @@ public class BulletTrajectory extends Gun {
         mapData.players[index].nTest++;
     }
     
+    public int impactX, impactY;
+    private int searchForce = -1, searchAngle;
+    private boolean candidateActive;
+    private int candidateFrame;
+
+    /** Bot-only cooperative search. Called on game loop; no thread or stale snapshot. */
+    public void stepSearch(int candidates, long nanos) {
+        if (complate) return;
+        long deadline = System.nanoTime() + nanos;
+        if (searchForce < 0) { searchForce = force0; searchAngle = minAng; }
+        for (int attempt = 0; attempt < candidates && System.nanoTime() < deadline; attempt++) {
+            if (!candidateActive && searchForce > 30) { complate = true; return; }
+            if (!candidateActive) {
+                force = searchForce; ang = searchAngle; force2 = 30;
+                searchAngle += 3;
+                if (searchAngle > 180 - minAng) { searchAngle = minAng; searchForce++; }
+                shootBullet(bulletId, x0, y0, w0, h0, ang, force, force2, 1, 0, -1);
+                for (Bullet bullet : bullets) {
+                    bullet.isCanCollision = false;
+                    bullet.isCanCollisionMap = true;
+                    bullet.isCanCollisionPlayer = bulletId != 5;
+                }
+                candidateActive = true; candidateFrame = 0;
+            }
+            for (; candidateFrame < 600 && System.nanoTime() < deadline; candidateFrame++) {
+                boolean active = false;
+                for (Bullet bullet : new ArrayList<>(bullets)) {
+                    // Split projectiles created during the previous frame must also be read-only.
+                    bullet.isCanCollision = false;
+                    if ((bulletId != 5 || bullet.collect && mapData.isCollisionMap(bullet.bX, bullet.bY))
+                            && mapData.inRegion(bullet.bX, bullet.bY, tX, tY, tW, tH)) {
+                        impactX = bullet.bX; impactY = bullet.bY;
+                        force2 = bullet.frame; place = true; complate = true; return;
+                    }
+                    if (bullet.collect) continue;
+                    active = true;
+                    bullet.nextXY();
+                }
+                if (!active) { candidateActive = false; break; }
+            }
+            if (candidateFrame >= 600) candidateActive = false;
+            // Yield this exact candidate, rather than silently skipping its unfinished path.
+            if (candidateActive) return;
+        }
+    }
+
     public void start() {
         this.complate = false;
         new Thread(this.runnable).start();

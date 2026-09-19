@@ -1,0 +1,114 @@
+{
+  "A": {
+    "matches": 3,
+    "done": true,
+    "observed_bot_turns": 119,
+    "bot_turns_without_shot": 65,
+    "maps": [
+      20,
+      20,
+      20
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "6": 5
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 91,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 16,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 2,
+        "packets": {
+          "POSITION": 83,
+          "ITEM_RECEIVED": 1,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 3,
+        "packets": {
+          "POSITION": 263,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 23,
+          "HP_RECEIVED": 3
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 437,
+      "ITEM_RECEIVED": 5,
+      "SHOT_RECEIVED": 54,
+      "HP_RECEIVED": 17
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      6
+    ]
+  },
+  "B": {
+    "matches": 3,
+    "done": true,
+    "observed_bot_turns": 119,
+    "bot_turns_without_shot": 65,
+    "maps": [
+      20,
+      20,
+      20
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "6": 5
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 91,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 16,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 2,
+        "packets": {
+          "POSITION": 83,
+          "ITEM_RECEIVED": 1,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 3,
+        "packets": {
+          "POSITION": 263,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 23,
+          "HP_RECEIVED": 3
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 437,
+      "ITEM_RECEIVED": 5,
+      "SHOT_RECEIVED": 54,
+      "HP_RECEIVED": 17
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      6
+    ]
+  },
+  "same_bot_packets": true,
+  "expected_matches": 3,
+  "passed": true,
+  "scope": "Packet consistency only. Corpse targeting/collision is verified separately by Java regression tests; packets do not expose aim target IDs."
+}

@@ -1,0 +1,3 @@
+Container restart count: 0
+Error lines: 0
+

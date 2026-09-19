@@ -1,0 +1,15 @@
+# Two-client acceptance report
+
+## Client A
+- Result: PASS
+- Server-confirmed matches: 3/3
+- Relogin confirmed: True
+- Broadcasts received: 2
+
+## Client B
+- Result: PASS
+- Server-confirmed matches: 3/3
+- Relogin confirmed: True
+- Broadcasts received: 2
+
+Admin/SQL data comparison requires the separate server-side acceptance runner; it is not inferred from completing matches.

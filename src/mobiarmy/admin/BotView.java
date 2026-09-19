@@ -1,6 +1,7 @@
 package mobiarmy.admin;
 
 import java.util.*;
+import mobiarmy.server.BotPolicy;
 
 final class BotView {
     static String render(AdminBots.Snapshot snapshot, List<AdminBots.Job> jobs,
@@ -42,6 +43,7 @@ final class BotView {
                     .append("</small></td><td>#").append(r.glass()).append(" · Lv.").append(r.level())
                     .append("</td><td>").append(label(r.state())).append(r.locked() ? " · Đang xử lý" : "")
                     .append("</td><td>").append(h(r.room())).append("</td><td>").append(h(r.targetMode()))
+                    .append("<small class='block'>").append(h(r.decision())).append("</small><small class='block'>").append(h(r.metrics())).append("</small><small class='block'>").append(h(r.inventory())).append("</small>")
                     .append("</td><td><form method='post' action='/admin/bots' class='stack-form'>").append(hidden(csrf))
                     .append("<input type='hidden' name='bot_id' value='").append(r.id()).append("'>")
                     .append("<select name='action' aria-label='Thao tác bot'><option value='target'>Đổi cách chọn mục tiêu</option>");
@@ -49,7 +51,8 @@ final class BotView {
             body.append("<option value='leave'").append(disabled).append(">Rời phòng chờ</option><option value='remove'").append(disabled)
                     .append(">Xóa bot</option></select><label>Mục tiêu (khi đổi chế độ)<select name='mode'><option value='DEFAULT'>Theo cấu hình server</option>")
                     .append("<option value='RANDOM'>Ngẫu nhiên</option><option value='LOW_HP'>Ít HP nhất</option></select></label>")
-                    .append(reason()).append("<button class='btn btn-soft'>Gửi lệnh</button></form></td></tr>");
+                    .append(reason()).append("<button class='btn btn-soft'>Gửi lệnh</button></form>")
+                    .append(policyForm(r,csrf)).append("</td></tr>");
         }
         if (rows.isEmpty()) body.append("<tr><td colspan='6'>Không tìm thấy bot phù hợp.</td></tr>");
         body.append("</tbody></table></div><div class='pagination'><span>").append(rows.size()).append(" bot · Trang ")
@@ -63,6 +66,34 @@ final class BotView {
                 .append("</small></td><td>").append(h(job.action())).append("</td><td>").append(h(job.status())).append("</td><td>")
                 .append(h(job.result())).append("</td></tr>");
         return body.append("</tbody></table></div><p class='muted'>Giữ 100 lệnh gần đây trong bộ nhớ. Audit yêu cầu và kết quả lưu ở lịch sử quản trị.</p></section>").toString();
+    }
+    private static String policyForm(AdminBots.Row r,String csrf) {
+        BotPolicy p=r.policy();
+        StringBuilder s=new StringBuilder("<details><summary>Chiến thuật và item</summary><form method='post' action='/admin/bots' class='stack-form'>")
+                .append(hidden(csrf)).append("<input type='hidden' name='action' value='policy'><input type='hidden' name='bot_id' value='").append(r.id()).append("'>");
+        s.append(flag("enabled","AI chiến thuật",p.enabled())).append(flag("movement","Di chuyển",p.movement())).append(flag("items","Dùng item",p.items()));
+        s.append("<label>Phong cách<select name='preset'>");
+        for(var v:BotPolicy.Preset.values()) s.append("<option").append(v==p.preset()?" selected":"").append(">").append(v).append("</option>");
+        s.append("</select></label>").append(number("heal","Ngưỡng HP (%)",p.healPercent(),1,90))
+                .append(number("steps","Bước tối đa",p.maxSteps(),0,60)).append(number("think","Suy nghĩ (ms)",p.thinkMs(),0,2000))
+                .append(number("budget","Ngân sách lượt (ms)",p.turnMs(),3000,10000))
+                .append("<label>Item cho phép<input name='allowed' value='")
+                .append(h(p.allowed().stream().sorted().map(String::valueOf).collect(java.util.stream.Collectors.joining(","))))
+                .append("'></label><p>0: HP · 1: bay · 2: bắn x2 · 3: đi x2 · 5: ngưng gió · 6: phá đất · 10: HP đội · 100: POW. Cấu hình áp dụng từ lượt sau, lưu RAM.</p>")
+                .append(reason()).append("<button class='btn btn-primary'>Lưu chiến thuật</button></form>");
+        s.append("<form method='post' action='/admin/bots' class='stack-form'>").append(hidden(csrf))
+                .append("<input type='hidden' name='action' value='loadout'><input type='hidden' name='bot_id' value='").append(r.id())
+                .append("'><label>4 slot, -1 là trống<input name='slots' value='0,1,2,3' maxlength='64' required></label>")
+                .append(number("quantity","Cấp thêm mỗi loại đặc biệt",0,0,99))
+                .append("<p>Chỉ khi ngoài trận và chưa sẵn sàng. Không tự nạp lại giữa trận. 0/1 theo kho cơ bản; slot đặc biệt tiêu hao kho.</p>")
+                .append(reason()).append("<button class='btn btn-soft'>Đặt bộ item / cấp kho</button></form></details>");
+        return s.toString();
+    }
+    private static String flag(String key,String label,boolean value) {
+        return "<label>"+label+"<select name='"+key+"'><option value='true'"+(value?" selected":"")+">Bật</option><option value='false'"+(!value?" selected":"")+">Tắt</option></select></label>";
+    }
+    private static String number(String key,String label,int value,int min,int max) {
+        return "<label>"+label+"<input type='number' name='"+key+"' value='"+value+"' min='"+min+"' max='"+max+"' required></label>";
     }
     private static String hidden(String csrf) { return "<input type='hidden' name='csrf' value='" + h(csrf) + "'>"; }
     private static String reason() { return "<label>Lý do<input name='reason' maxlength='500' required></label>"; }

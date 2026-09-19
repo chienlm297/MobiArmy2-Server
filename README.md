@@ -452,3 +452,29 @@ Tra mã lệnh trong lịch sử quản trị. 100 kết quả lệnh gần nh�
 **Không cần sửa schema DB.** Bot và chế độ riêng không lưu bền: restart tạo lại bot theo
 BOT_COUNT; bot đã xóa không làm giảm BOT_COUNT. Audit vẫn nằm trong database. Cấu hình
 tổng số lượng, tự tìm phòng và thời gian chờ vẫn dùng biến môi trường.
+
+## Auto-play bằng hai client thật
+
+Xem [hướng dẫn chạy và kiểm thử Auto-play](docs/testing/client-autoplay.md).
+Mã điều khiển và runner nằm trong repo `MobiArmy2-Client`; script đối chiếu admin/SQL
+nằm tại `scripts/testing/autoplay-admin-check.py`. Tính năng này không thay đổi cách chạy
+server bằng `run-manual.sh`.
+
+## Bot tự di chuyển — đợt A
+
+Tài liệu tổng hợp hiện hành: [Bot — các thay đổi, kiểm thử và giới hạn](docs/bot-summary.md).
+Mọi thay đổi liên quan đến bot phải cập nhật tài liệu này theo [AGENTS.md](AGENTS.md).
+
+Bật bằng `BOT_TACTICAL=true bash run-manual.sh` hoặc đặt `BOT_TACTICAL=true` khi chạy
+Compose. Mặc định tắt để bật thử ở phòng kiểm thử trước. Xem [hành vi, giới hạn và
+kiểm thử](docs/bot-phase-a.md). Đợt này giữ item cũ; không cần đổi schema DB.
+
+Bot chiến thuật hiện có **item và cấu hình từng bot trên admin**. Xem
+[hướng dẫn đợt B/C, cấp kho và sửa lỗi bắn xác chết](docs/bot-phase-b-c.md).
+Các lỗi xác chết cũng được sửa ở AI cũ; cần build và khởi động lại server để áp dụng.
+
+
+Bot B/C đã có [bản sửa bế tắc và báo cáo nghiệm thu](docs/bot-stalemate-fix.md):
+16/16 trận kết thúc, gồm một hòa chống bế tắc. Bot biết đổi vị trí thất bại và thử phá
+vật cản; trận PvP chỉ còn bot được hòa sau 120 giây không đổi HP hoặc 30 giây không
+người theo dõi. [Báo cáo trước sửa](docs/testing/bot-bc-soak.md) giữ lại các ca timeout.

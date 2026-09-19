@@ -1,0 +1,113 @@
+{
+  "basic": {
+    "passed": true,
+    "rows": [
+      {
+        "bot": -2147483648,
+        "item": 2,
+        "initial": 10,
+        "used": 9,
+        "actual": 1,
+        "passed": true
+      },
+      {
+        "bot": -2147483648,
+        "item": 3,
+        "initial": 10,
+        "used": 6,
+        "actual": 4,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 2,
+        "initial": 10,
+        "used": 8,
+        "actual": 2,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 3,
+        "initial": 10,
+        "used": 5,
+        "actual": 5,
+        "passed": true
+      }
+    ]
+  },
+  "special": {
+    "passed": true,
+    "rows": [
+      {
+        "bot": -2147483648,
+        "item": 5,
+        "initial": 30,
+        "used": 6,
+        "actual": 24,
+        "passed": true
+      },
+      {
+        "bot": -2147483648,
+        "item": 6,
+        "initial": 30,
+        "used": 0,
+        "actual": 30,
+        "passed": true
+      },
+      {
+        "bot": -2147483648,
+        "item": 10,
+        "initial": 30,
+        "used": 6,
+        "actual": 24,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 5,
+        "initial": 30,
+        "used": 6,
+        "actual": 24,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 6,
+        "initial": 30,
+        "used": 0,
+        "actual": 30,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 10,
+        "initial": 30,
+        "used": 6,
+        "actual": 24,
+        "passed": true
+      }
+    ]
+  },
+  "terrain-retry": {
+    "passed": true,
+    "rows": [
+      {
+        "bot": -2147483648,
+        "item": 6,
+        "initial": 30,
+        "used": 1,
+        "actual": 29,
+        "passed": true
+      },
+      {
+        "bot": -2147483647,
+        "item": 6,
+        "initial": 30,
+        "used": 1,
+        "actual": 29,
+        "passed": true
+      }
+    ]
+  }
+}

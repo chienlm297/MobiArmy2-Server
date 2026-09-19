@@ -1,0 +1,8 @@
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Built dist/MobiArmy.jar
+Run: java -jar dist/MobiArmy.jar
+combat-10-thirteen-AI-passes samples=100 p50_ms=0.562 p95_ms=2.030 p99_ms=9.117 heap_mb=18.9 threads=6
+combat-50-thirteen-AI-passes samples=100 p50_ms=2.580 p95_ms=3.088 p99_ms=4.464 heap_mb=39.2 threads=6
+combat-100-thirteen-AI-passes samples=100 p50_ms=3.576 p95_ms=5.008 p99_ms=5.352 heap_mb=77.3 threads=6
+idle-5000-one-game-tick samples=300 p50_ms=0.493 p95_ms=0.733 p99_ms=0.913 heap_mb=99.3 threads=6

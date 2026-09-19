@@ -1,0 +1,27 @@
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Built dist/MobiArmy.jar
+Run: java -jar dist/MobiArmy.jar
+PASS: start grace period with spectator
+PASS: no premature draw
+PASS: walking without HP progress does not evade draw deadline
+PASS: real damage resets progress timer
+PASS: damage grants full interval
+PASS: draw after new full interval
+PASS: unattended grace period
+PASS: cleanup unattended bot match
+PASS: spectator reconnect cancels unattended cleanup
+PASS: living human is never forced to draw by bot policy
+PASS: boss match excluded
+PASS: normal victory not replaced by draw
+Bot match drawn: room=0 board=0 reason=UNATTENDED
+PASS: map update routes cleanup through existing draw result
+PASS: draw is not repeated
+PASS: original heuristic stays at preferred range
+PASS: failed firing position is replaced safely
+PASS: escape still respects freeze
+PASS: slow candidate yields unfinished
+PASS: next budget slice resumes same candidate instead of dropping it
+PASS: blocked Gunner clears terrain with ordinary ammo, no item granted
+PASS: terrain fallback rejected near living ally
+21 anti-stall checks passed

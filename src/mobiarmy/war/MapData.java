@@ -27,6 +27,7 @@ import mobiarmy.war.Boss.bullet.Bullet;
  * @author Văn Tú
  */
 public class MapData {
+    private BotMatchGuard botMatchGuard;
     
     public RoomWait roomWait;
     public Map map;
@@ -339,6 +340,7 @@ public class MapData {
     }
     
     public void endTheWar() {
+        if(botMatchGuard!=null)botMatchGuard.reset();
         for (Player player : this.players) {
             if (player != null && player.user != null) {
                 if (player.user.session != null) {
@@ -655,7 +657,7 @@ public class MapData {
     
     public boolean isCollisionPlayer(int x, int y) {
         for (Player player : this.players) {
-            if (player != null && player.isCollision && player.isCollision(x, y) && player.countInvisible2 == 0) {
+            if (player != null && !player.isDie && player.hp > 0 && player.isCollision && player.isCollision(x, y) && player.countInvisible2 == 0) {
                 return true;
             }
         }
@@ -789,11 +791,17 @@ public class MapData {
     }
     
     public void useItem(int index, byte itemID) {
+        if (index < 0 || index >= players.length) return;
         Player player = this.players[index];
-        if (player != null && player.index == this.getTurn() && !player.isUseItem && !player.isShoot) {
+        if (player != null && !player.isDie && player.index == this.getTurn() && !player.isUseItem && !player.isShoot) {
             Player.Item item = player.findUnusedItemById(itemID);
-            if (item == null && (itemID != 100 || player.angry < 100)) {
+            if (itemID == 100 ? player.angry < 100 : item == null) {
                 return;
+            }
+            // Validate inventory before publishing an effect or consuming the turn's item.
+            if (itemID != 100 && itemID != 0 && itemID != 1) {
+                Item stock = player.user == null ? null : player.user.getItem(itemID);
+                if (stock == null || stock.num <= 0) return;
             }
             player.isUseItem = true;
             //send
@@ -1066,6 +1074,14 @@ public class MapData {
             return;
         }
         if (this.updateComplete()) {
+            return;
+        }
+        if(botMatchGuard==null)botMatchGuard=new BotMatchGuard();
+        BotMatchGuard.Reason botEnd=botMatchGuard.observe(this,System.currentTimeMillis());
+        if(botEnd!=BotMatchGuard.Reason.NONE) {
+            System.out.println("Bot match drawn: room="+roomWait.roomID+" board="+roomWait.boardID+" reason="+botEnd);
+            this.typeComplete=3;
+            this.endTheWar();
             return;
         }
         if (this.getTurn() != -1 && System.currentTimeMillis() > this.timeWait + 15000) {

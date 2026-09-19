@@ -1,0 +1,14 @@
+{
+  "bot_packets": {
+    "POSITION": 768,
+    "ITEM_RECEIVED": 97,
+    "SHOT_RECEIVED": 198,
+    "HP_RECEIVED": 136
+  },
+  "guard_draws": {
+    "basic": 0,
+    "maze": 1,
+    "support": 0
+  },
+  "jar_sha256": "eff4c9f785e41a32461cc2f87470faafb158b21ac72a56cc43e103340b91c462"
+}

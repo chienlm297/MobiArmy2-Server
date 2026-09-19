@@ -1,0 +1,35 @@
+{
+  "basic": {
+    "first_event_utc": "2026-09-19T01:11:42.113000+00:00",
+    "last_event_utc": "2026-09-19T01:35:15.118000+00:00",
+    "elapsed_seconds": 1413.005,
+    "failures": [
+      {
+        "time": 1789781715118,
+        "type": "FAILED",
+        "detail": "Match timeout (not counted as completed)"
+      }
+    ],
+    "seconds_without_any_shot_at_failure": 555.876
+  },
+  "special": {
+    "first_event_utc": "2026-09-19T01:16:14.440000+00:00",
+    "last_event_utc": "2026-09-19T01:24:36.384000+00:00",
+    "elapsed_seconds": 501.944,
+    "failures": [],
+    "seconds_without_any_shot_at_failure": null
+  },
+  "terrain-retry": {
+    "first_event_utc": "2026-09-19T01:20:48.816000+00:00",
+    "last_event_utc": "2026-09-19T01:30:55.915000+00:00",
+    "elapsed_seconds": 607.099,
+    "failures": [
+      {
+        "time": 1789781455915,
+        "type": "FAILED",
+        "detail": "Match timeout (not counted as completed)"
+      }
+    ],
+    "seconds_without_any_shot_at_failure": 423.224
+  }
+}

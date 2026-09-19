@@ -92,7 +92,7 @@ public class Gun {
 
                 case 5 -> {
                     // Item bay
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemTeleportBullet(this, 0, bx, by, vx, vy));
                 }
 
@@ -136,7 +136,7 @@ public class Gun {
 
                 case 13 -> {
                     // Voi rồng
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemTornadoBullet(this, bx, by, vx, vy));
                 }
 
@@ -172,7 +172,7 @@ public class Gun {
 
                 case 30 -> {
                     // Khoáng đất
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemEarthHoleBullet(this, this.gunX, this.gunY));
                 }
 
@@ -192,7 +192,7 @@ public class Gun {
 
                 case 34 -> {
                     // Add boom
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new AddBoomBullet(this, 0, bx, by, vx, vy));
                 }
 
@@ -201,7 +201,7 @@ public class Gun {
 
                 case 36 -> {
                     // Bay 2
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemTeleportBullet2(this, 0, bx, by, vx, vy));
                 }
 
@@ -232,7 +232,7 @@ public class Gun {
 
                 case 53 -> {
                     // UFO
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemUfoBullet(this, att, this.mapData.players[this.index].hp, this.mapData.players[this.index].team, 100, 100));
                 }
 
@@ -255,7 +255,7 @@ public class Gun {
 
                 case 57 -> {
                     // Bom hẹn giờ
-                    this.mapData.disableLuck = true;
+                    if (!this.test) this.mapData.disableLuck = true;
                     this.bullets.add(new ItemTimeBombBullet(this, att * 2, bx, by, vx, vy));
                 }
 

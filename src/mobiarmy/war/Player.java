@@ -358,41 +358,20 @@ public class Player {
     }
     
     private void move(boolean addX) {
-        if (this.countFreeze > 0) {
-            return;
+        if (this.countFreeze > 0 || this.buocdi >= this.theluc) return;
+        MovementStep.Result step = MovementStep.next(mapData, x, y, addX,
+                isRunSpeed ? 2 : 1, isFly);
+        if (step.moved()) {
+            buocdi++;
+            x = (short) step.x();
+            y = (short) step.y();
         }
-        byte step = (byte) (this.isRunSpeed ? 2 : 1);
-        if(this.buocdi > this.theluc) {
-            return;
-        }
-        this.buocdi++;
-        if(addX) {
-            this.x += step;
-        } else {
-            this.x -= step;
-        }
-        if(this.mapData.isCollisionMap(this.x, this.y - 5)) {
-            this.buocdi--;
-            if(addX) {
-                this.x -= step;
-            } else {
-                this.x += step;
-            }
-            return;
-        }
-        for(int i = 4; i >= 0; i--) {
-            if(this.mapData.isCollisionMap(this.x, this.y - i)) {
-                this.y -= i;
-                return;
-            }
-        }
-        this.chuanHoaXY();
     }
 
     public boolean isCollision(int x, int y) {
         return this.mapData.inRegion(x, y, this.x - this.width / 2, this.y - this.height, this.width, this.height);
     }
-    
+
     public boolean isCollision(int x, int y, int d) {
         return this.mapData.inRegion(x, y, this.x - this.width / 2 - d, this.y - this.height - d, this.width + 2 * d, this.height + 2 * d);
     }

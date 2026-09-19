@@ -1,0 +1,10 @@
+{
+  "disconnected_at_ms": 1789803231854,
+  "terminated_fixture_clients": 2,
+  "server_draws": [],
+  "snapshot": "  BcFixture  #-2147483648   #0 · Lv.1  Phòng chờ  0 / 0  RANDOM (mặc định) Bắn đạn 0  Quyết định=63 · Đoạn đi=30 · Item=9 · Tìm góc=1442 · ms=205 · Timeout=0 · Bỏ lượt=0  Slots: [-1, -1, -1, -1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=27 6=30 10=27    \n  BcFixture2  #-2147483647   #0 · Lv.1  Phòng chờ  0 / 0  RANDOM (mặc định) Bắn đạn 0  Quyết định=72 · Đoạn đi=27 · Item=9 · Tìm góc=2561 · ms=661 · Timeout=0 · Bỏ lượt=0  Slots: [-1, -1, -1, -1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=27 6=30 10=27    \n",
+  "passed": true,
+  "guard_observed": false,
+  "room_returned_to_waiting": true,
+  "scope": "Disconnect cleanup observation: match returned to waiting. UNATTENDED guard was not observed; normal combat may finish before its deadline. Guard timing and draw path are checked by Java regression."
+}

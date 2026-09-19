@@ -93,3 +93,55 @@
 - [x] Chặn xóa/rời phòng khi bot đã vào trận; giới hạn vòng ép ngọc khi tạo bot.
 - [x] 15 kiểm tra quản trị bot; 156 kiểm tra HTTP/SQL toàn admin; 18 tổ hợp viewport/trang trên Chrome.
 - [ ] Metrics bot, lưu bền cấu hình riêng và benchmark độ trễ lệnh. Xem docs/bot-improvements.md.
+
+## Auto-play client — 18/09/2026
+
+- [x] Controller A/B: đăng nhập, xác nhận phòng/chủ phòng/đối tác, ready/start, bắn Gunner theo lượt.
+- [x] RMS riêng, F8/F9, timeout, không gửi trùng hành động; runner tự đóng client.
+- [x] Hai client thật hoàn thành ba trận và đăng nhập lại.
+- [x] Broadcast ở phòng chờ/trong trận; chỉnh lượng online; đối chiếu client/SQL/transaction/audit.
+- [x] Unit test controller và tài liệu chạy: `docs/testing/client-autoplay.md`.
+- [ ] Nghiệm thu hồi máu bằng client thật (hiện chỉ có unit test chờ item ACK).
+- [ ] Mở rộng nhân vật/đạn, di chuyển, boss và địa hình có vòi rồng.
+
+## Bot chiến thuật — đợt A (19/09/2026)
+
+- [x] Controller theo trận/lượt, deadline, chờ animation, hành động không lặp.
+- [x] Bước đi dùng chung engine/dự đoán; chọn vị trí an toàn, đi từng đoạn theo thể lực.
+- [x] Tìm góc theo ngân sách trên game loop, giới hạn tổng và quay vòng; giữ va chạm đất.
+- [x] Giữ item cũ và AI boss; flag `BOT_TACTICAL` cho phép bật thử/quay lại AI cũ.
+- [x] 86 kiểm tra Java đạt, bao gồm 31 kiểm tra mới. Xem `docs/bot-phase-a.md`.
+- [x] Nghiệm thu hai client thật quan sát bot di chuyển/bắn (bằng chứng đợt B/C).
+- [x] Benchmark fixture; tiếp tục cân chỉnh/tải production trước khi bật `BOT_TACTICAL` mặc định.
+
+## Bot chiến thuật — đợt B/C và xác chết (19/09/2026)
+
+- [x] Chính sách HP/POW/x2/đi x2/ngưng gió/HP đội, kho thật và một item/lượt.
+- [x] Bay tới điểm đáp an toàn, preview không đổi tọa độ thật; fallback phá đất.
+- [x] Preset, allowlist, ngưỡng, ngân sách, metrics và cấp loadout qua admin/game loop/audit.
+- [x] Sửa AI cũ giữ góc bắn vào mục tiêu chết; đạn không còn va chạm xác chết.
+- [x] 141 kiểm tra Java đạt; HTTP thật kiểm tra cấu hình/CSRF/audit.
+- [x] Hai client + hai bot hoàn thành ba trận; kiểm tra thêm một trận sau sửa xác chết.
+- [x] Benchmark fixture 10/50/100 bot combat và 5.000 bot idle.
+- [x] Ghi nhận client thật dùng ngưng gió/phá đất/HP đội, đối chiếu gói và kho; xem báo cáo soak (không đồng nghĩa toàn bộ trận đạt).
+- [ ] Theo dõi tải production trước khi mở `BOT_TACTICAL` cho toàn bộ bot.
+
+Hướng dẫn: `docs/bot-phase-b-c.md`; bằng chứng: `docs/testing/bot-bc-evidence/README.md`.
+
+## Kiểm thử mở rộng B/C — 19/09/2026
+
+- [x] 141 regression server, 31 kiểm tra client và 1.000 lượt mô phỏng thêm.
+- [x] BC-SOAK-01: sửa nhánh bỏ qua ngưng gió sau khi đi tới đích, có test trước/sau.
+- [x] Chạy 16 trận được bắt đầu bằng hai client + hai bot mỗi bộ: 14 kết thúc, 2 timeout.
+- [x] Đối chiếu A/B và kho thật cho cả 8 item hỗ trợ; lưu ảnh/log cả thành công và thất bại.
+- [x] BC-SOAK-02: đổi vị trí thất bại, giữ phương án đạn qua tick, phá vật cản và guard hòa khi chỉ còn bot không tiến triển.
+- [x] Guard PvP chỉ còn bot: 120 giây không đổi HP / 30 giây không người theo dõi; giữ đường hòa của engine.
+- [x] Admin thêm Bỏ lượt độc lập Timeout; log lý do guard và phân biệt hết đường bắn với hết mục tiêu.
+- [x] Chạy lại cơ bản 10/10, Mê cung 3/3 (1 hòa do guard), hỗ trợ 3/3; cả hai client đăng nhập lại và đối chiếu gói/kho đạt.
+
+Báo cáo: `docs/testing/bot-bc-soak.md`.
+
+
+Bản sửa bế tắc: `docs/bot-stalemate-fix.md`; 162 kiểm tra Java chính (21 ca mới),
+1.000 lượt mô phỏng. Kết quả cũ FAIL được giữ làm bằng chứng lịch sử; bản mới kết thúc
+16/16 trận, trong đó có một hòa chống bế tắc.

@@ -1,0 +1,74 @@
+{
+  "A": {
+    "matches": 0,
+    "done": false,
+    "observed_bot_turns": 186,
+    "bot_turns_without_shot": 178,
+    "maps": [
+      20
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "6": 2
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 63,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 8,
+          "HP_RECEIVED": 6
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 63,
+      "ITEM_RECEIVED": 2,
+      "SHOT_RECEIVED": 8,
+      "HP_RECEIVED": 6
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      6
+    ]
+  },
+  "B": {
+    "matches": 0,
+    "done": false,
+    "observed_bot_turns": 186,
+    "bot_turns_without_shot": 178,
+    "maps": [
+      20
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "6": 2
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 63,
+          "ITEM_RECEIVED": 2,
+          "SHOT_RECEIVED": 8,
+          "HP_RECEIVED": 6
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 63,
+      "ITEM_RECEIVED": 2,
+      "SHOT_RECEIVED": 8,
+      "HP_RECEIVED": 6
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      6
+    ]
+  },
+  "same_bot_packets": true,
+  "expected_matches": 3,
+  "passed": false,
+  "scope": "Packet consistency only. Corpse targeting/collision is verified separately by Java regression tests; packets do not expose aim target IDs."
+}

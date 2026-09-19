@@ -1,0 +1,32 @@
+{
+  "reason": "autoplay-09126e8cbf794a4585e45f48c89a39fc",
+  "passed": true,
+  "accounts": [
+    6,
+    7
+  ],
+  "checks": [
+    {
+      "user_id": 6,
+      "initial": 1000,
+      "expected": 1011,
+      "client": 1011,
+      "database": 1011,
+      "transactions": 1,
+      "audits": 1,
+      "passed": true
+    },
+    {
+      "user_id": 7,
+      "initial": 1000,
+      "expected": 1011,
+      "client": 1011,
+      "database": 1011,
+      "transactions": 1,
+      "audits": 1,
+      "passed": true
+    }
+  ],
+  "lobby_broadcast": "autoplay-09126e8cbf794a4585e45f48c89a39fc-lobby",
+  "combat_broadcast": "autoplay-09126e8cbf794a4585e45f48c89a39fc-combat"
+}

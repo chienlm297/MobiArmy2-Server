@@ -1,0 +1,36 @@
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+PASS one login and join
+PASS host waits for readiness
+PASS one start request
+PASS no duplicate shot within turn
+PASS no shot on opponent turn
+PASS new own turn shoots once
+PASS result counted once
+PASS waits for server rematch cooldown
+PASS returns after result
+PASS three confirmed matches trigger relogin
+PASS fresh login requested
+PASS done only after confirmed relogin
+PASS stop cancels pending actions
+PASS unexpected player rejected
+PASS wrong room rejected
+PASS wrong owner rejected
+PASS B waits for A room marker
+PASS B sends ready once
+PASS early start event accepted after ready request
+PASS match timeout is failure not success
+PASS disconnect stops automation
+PASS heal waits for acknowledgement
+PASS shoot follows item acknowledgement
+PASS stop during combat prevents new shot
+PASS login timeout
+PASS fixture waits for all invited bots
+PASS fixture starts only with expected participant count
+PASS fixture rejects empty-seat sentinel as bot ID
+PASS map override disabled by default
+PASS explicit PvP map accepted
+PASS fixture map limited to PvP maps
+31 controller checks passed

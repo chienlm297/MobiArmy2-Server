@@ -1,0 +1,53 @@
+{"time":1789803189295,"type":"STATE","detail":"LOGIN"}
+{"time":1789803189392,"type":"LOGIN_REQUEST","detail":"sent"}
+{"time":1789803191886,"type":"LOGIN_CONFIRMED","detail":"id=7 xu=100000 luong=1000"}
+{"time":1789803191887,"type":"STATE","detail":"JOIN"}
+{"time":1789803192736,"type":"JOIN_REQUEST","detail":"0/0"}
+{"time":1789803192861,"type":"ROOM_METADATA","detail":"0/0"}
+{"time":1789803193061,"type":"STATE","detail":"PARTNER"}
+{"time":1789803194936,"type":"READY_REQUEST","detail":"sent"}
+{"time":1789803195086,"type":"STATE","detail":"START"}
+{"time":1789803197164,"type":"MATCH_START","detail":"1"}
+{"time":1789803197164,"type":"MATCH_MAP","detail":"20"}
+{"time":1789803197164,"type":"ACTOR","detail":"0:6"}
+{"time":1789803197164,"type":"ACTOR","detail":"1:7"}
+{"time":1789803197164,"type":"ACTOR","detail":"2:-2147483647"}
+{"time":1789803197164,"type":"ACTOR","detail":"3:-2147483648"}
+{"time":1789803197164,"type":"STATE","detail":"PLAY"}
+{"time":1789803197261,"type":"TURN","detail":"0:1"}
+{"time":1789803198486,"type":"SHOT_RECEIVED","detail":"0:0:24"}
+{"time":1789803199111,"type":"TURN","detail":"1:2"}
+{"time":1789803201642,"type":"SHOT_REQUEST","detail":"turn=2 angle=94 force=9"}
+{"time":1789803201744,"type":"SHOT_RECEIVED","detail":"1:0:94"}
+{"time":1789803202694,"type":"TURN","detail":"2:3"}
+{"time":1789803205619,"type":"SHOT_RECEIVED","detail":"2:0:30"}
+{"time":1789803206419,"type":"TURN","detail":"3:4"}
+{"time":1789803207244,"type":"SHOT_RECEIVED","detail":"3:0:186"}
+{"time":1789803208069,"type":"HP_RECEIVED","detail":"2:738"}
+{"time":1789803208594,"type":"TURN","detail":"0:5"}
+{"time":1789803208894,"type":"SHOT_RECEIVED","detail":"0:0:46"}
+{"time":1789803209744,"type":"TURN","detail":"1:6"}
+{"time":1789803211762,"type":"SHOT_REQUEST","detail":"turn=6 angle=122 force=27"}
+{"time":1789803211864,"type":"SHOT_RECEIVED","detail":"1:0:122"}
+{"time":1789803213114,"type":"TURN","detail":"2:7"}
+{"time":1789803214364,"type":"SHOT_RECEIVED","detail":"2:0:30"}
+{"time":1789803215239,"type":"HP_RECEIVED","detail":"3:739"}
+{"time":1789803215764,"type":"TURN","detail":"3:8"}
+{"time":1789803216968,"type":"SHOT_RECEIVED","detail":"3:0:186"}
+{"time":1789803217764,"type":"HP_RECEIVED","detail":"2:469"}
+{"time":1789803218289,"type":"TURN","detail":"0:9"}
+{"time":1789803218714,"type":"SHOT_RECEIVED","detail":"0:0:28"}
+{"time":1789803219739,"type":"TURN","detail":"1:10"}
+{"time":1789803221326,"type":"SHOT_REQUEST","detail":"turn=10 angle=70 force=8"}
+{"time":1789803221477,"type":"SHOT_RECEIVED","detail":"1:0:70"}
+{"time":1789803222502,"type":"TURN","detail":"2:11"}
+{"time":1789803223652,"type":"SHOT_RECEIVED","detail":"2:0:36"}
+{"time":1789803224502,"type":"HP_RECEIVED","detail":"3:471"}
+{"time":1789803225027,"type":"TURN","detail":"3:12"}
+{"time":1789803225802,"type":"SHOT_RECEIVED","detail":"3:0:165"}
+{"time":1789803226752,"type":"HP_RECEIVED","detail":"2:200"}
+{"time":1789803227277,"type":"TURN","detail":"0:13"}
+{"time":1789803227602,"type":"SHOT_RECEIVED","detail":"0:0:26"}
+{"time":1789803228627,"type":"TURN","detail":"1:14"}
+{"time":1789803230120,"type":"SHOT_REQUEST","detail":"turn=14 angle=74 force=27"}
+{"time":1789803230199,"type":"SHOT_RECEIVED","detail":"1:0:74"}

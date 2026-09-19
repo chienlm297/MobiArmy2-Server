@@ -1,0 +1,2 @@
+  BcFixture  #-2147483648   #0 · Lv.1  Phòng chờ  0 / 0  RANDOM (mặc định) Bắn đạn 0  Quyết định=51 · Đoạn đi=30 · Item=9 · Tìm góc=1151 · ms=169 · Timeout=0 · Bỏ lượt=0  Slots: [5, 6, 10, 1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=27 6=30 10=27    
+  BcFixture2  #-2147483647   #0 · Lv.1  Phòng chờ  0 / 0  RANDOM (mặc định) Bắn đạn 0  Quyết định=60 · Đoạn đi=27 · Item=9 · Tìm góc=1920 · ms=576 · Timeout=0 · Bỏ lượt=0  Slots: [5, 6, 10, 1, -1, -1, -1, -1] · Kho: 0=99 1=99 2=0 3=0 5=27 6=30 10=27    

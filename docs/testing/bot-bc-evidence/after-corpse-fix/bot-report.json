@@ -1,0 +1,39 @@
+{
+  "A": {
+    "matches": 1,
+    "done": true,
+    "bot_packets": {
+      "ITEM_RECEIVED": 7,
+      "SHOT_RECEIVED": 9,
+      "POSITION": 19,
+      "HP_RECEIVED": 8
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      0,
+      2,
+      3,
+      100
+    ]
+  },
+  "B": {
+    "matches": 1,
+    "done": true,
+    "bot_packets": {
+      "ITEM_RECEIVED": 7,
+      "SHOT_RECEIVED": 9,
+      "POSITION": 19,
+      "HP_RECEIVED": 8
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      0,
+      2,
+      3,
+      100
+    ]
+  },
+  "same_bot_packets": true,
+  "passed": true,
+  "scope": "Packet consistency only. Corpse targeting/collision is verified separately by Java regression tests; packets do not expose aim target IDs."
+}

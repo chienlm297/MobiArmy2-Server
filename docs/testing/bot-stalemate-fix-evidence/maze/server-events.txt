@@ -1,0 +1,2 @@
+Restart count: 0
+Bot match drawn: room=0 board=0 reason=NO_PROGRESS

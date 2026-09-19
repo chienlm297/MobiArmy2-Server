@@ -1,0 +1,9 @@
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Built dist/MobiArmy.jar
+Run: java -jar dist/MobiArmy.jar
+PASS: 1000 deterministic simulated turns seed=20260919 checks=1512143 shots=833 moveSegments=962 items=594
+PASS: wind item after movement
+PASS: blocked trajectory selects terrain item through controller
+PASS: target dies during terrain-item planning, no shot or debit
+PASS: support heals teammate through controller

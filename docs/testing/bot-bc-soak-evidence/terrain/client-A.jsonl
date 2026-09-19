@@ -1,0 +1,4 @@
+{"time":1789780806585,"type":"STATE","detail":"LOGIN"}
+{"time":1789780806646,"type":"LOGIN_REQUEST","detail":"sent"}
+{"time":1789780806916,"type":"FAILED","detail":"Server message: Thông tin tài khoản hoặc mật khẩu không chính xác."}
+{"time":1789780806916,"type":"FRAME","detail":"room=false correctRoom=true owner=true extra=false count=0 actualOwner=0 unavailable"}

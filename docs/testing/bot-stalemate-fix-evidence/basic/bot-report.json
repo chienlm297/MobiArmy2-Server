@@ -1,0 +1,270 @@
+{
+  "A": {
+    "matches": 10,
+    "done": true,
+    "observed_bot_turns": 133,
+    "bot_turns_without_shot": 20,
+    "maps": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "2": 17,
+      "0": 19,
+      "100": 21,
+      "3": 11,
+      "1": 6
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 38,
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 12
+        }
+      },
+      {
+        "match": 2,
+        "packets": {
+          "ITEM_RECEIVED": 5,
+          "SHOT_RECEIVED": 11,
+          "POSITION": 22,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 3,
+        "packets": {
+          "POSITION": 39,
+          "ITEM_RECEIVED": 10,
+          "SHOT_RECEIVED": 12,
+          "HP_RECEIVED": 10
+        }
+      },
+      {
+        "match": 4,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 11,
+          "POSITION": 20,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 5,
+        "packets": {
+          "ITEM_RECEIVED": 8,
+          "POSITION": 12,
+          "SHOT_RECEIVED": 13,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 6,
+        "packets": {
+          "ITEM_RECEIVED": 6,
+          "POSITION": 79,
+          "SHOT_RECEIVED": 10,
+          "HP_RECEIVED": 8
+        }
+      },
+      {
+        "match": 7,
+        "packets": {
+          "POSITION": 26,
+          "ITEM_RECEIVED": 10,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 11
+        }
+      },
+      {
+        "match": 8,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 9,
+          "POSITION": 18,
+          "HP_RECEIVED": 8
+        }
+      },
+      {
+        "match": 9,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "POSITION": 9,
+          "SHOT_RECEIVED": 9,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 10,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "POSITION": 11,
+          "SHOT_RECEIVED": 8,
+          "HP_RECEIVED": 11
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 274,
+      "ITEM_RECEIVED": 74,
+      "SHOT_RECEIVED": 113,
+      "HP_RECEIVED": 94
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      0,
+      1,
+      2,
+      3,
+      100
+    ]
+  },
+  "B": {
+    "matches": 10,
+    "done": true,
+    "observed_bot_turns": 133,
+    "bot_turns_without_shot": 20,
+    "maps": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "console_errors": [],
+    "item_counts": {
+      "2": 17,
+      "0": 19,
+      "100": 21,
+      "3": 11,
+      "1": 6
+    },
+    "per_match": [
+      {
+        "match": 1,
+        "packets": {
+          "POSITION": 38,
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 12
+        }
+      },
+      {
+        "match": 2,
+        "packets": {
+          "ITEM_RECEIVED": 5,
+          "SHOT_RECEIVED": 11,
+          "POSITION": 22,
+          "HP_RECEIVED": 7
+        }
+      },
+      {
+        "match": 3,
+        "packets": {
+          "POSITION": 39,
+          "ITEM_RECEIVED": 10,
+          "SHOT_RECEIVED": 12,
+          "HP_RECEIVED": 10
+        }
+      },
+      {
+        "match": 4,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 11,
+          "POSITION": 20,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 5,
+        "packets": {
+          "ITEM_RECEIVED": 8,
+          "POSITION": 12,
+          "SHOT_RECEIVED": 13,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 6,
+        "packets": {
+          "ITEM_RECEIVED": 6,
+          "POSITION": 79,
+          "SHOT_RECEIVED": 10,
+          "HP_RECEIVED": 8
+        }
+      },
+      {
+        "match": 7,
+        "packets": {
+          "POSITION": 26,
+          "ITEM_RECEIVED": 10,
+          "SHOT_RECEIVED": 15,
+          "HP_RECEIVED": 11
+        }
+      },
+      {
+        "match": 8,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "SHOT_RECEIVED": 9,
+          "POSITION": 18,
+          "HP_RECEIVED": 8
+        }
+      },
+      {
+        "match": 9,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "POSITION": 9,
+          "SHOT_RECEIVED": 9,
+          "HP_RECEIVED": 9
+        }
+      },
+      {
+        "match": 10,
+        "packets": {
+          "ITEM_RECEIVED": 7,
+          "POSITION": 11,
+          "SHOT_RECEIVED": 8,
+          "HP_RECEIVED": 11
+        }
+      }
+    ],
+    "bot_packets": {
+      "POSITION": 274,
+      "ITEM_RECEIVED": 74,
+      "SHOT_RECEIVED": 113,
+      "HP_RECEIVED": 94
+    },
+    "shots_by_dead_bot": 0,
+    "bot_item_ids": [
+      0,
+      1,
+      2,
+      3,
+      100
+    ]
+  },
+  "same_bot_packets": true,
+  "expected_matches": 10,
+  "passed": true,
+  "scope": "Packet consistency only. Corpse targeting/collision is verified separately by Java regression tests; packets do not expose aim target IDs."
+}
